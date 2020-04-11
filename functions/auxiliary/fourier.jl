@@ -332,6 +332,9 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=16, sparse=false)
 
         # set ticks
         tick_params(labelsize=fontsize)
+        
+        # create colorbar
+        colorbar()
 
     else
 

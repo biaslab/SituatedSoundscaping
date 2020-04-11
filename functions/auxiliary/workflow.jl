@@ -17,3 +17,18 @@ function compatibility_fix(algo)
     algo = replace(algo, "Gamma," => "ForneyLab.Gamma,")
     return algo
 end
+
+# function to collect an identity matrix
+ Ic(dim::Int64) = 1*collect(I(dim))
+
+# finds all step functions and runs them all once
+function step_all!(data::Dict, marginals::Dict=Dict())
+    # fetch different types of step functions
+    functions = names(Main)[setdiff(findall(x -> occursin("step", String(x)), names(Main)), findall(x -> ("step!" == String(x)) || ("step_all!" == String(x)), names(Main)))]
+    # invoke functions
+    for func in functions
+        Base.invokelatest(eval(func), data, marginals)
+    end
+    # return output
+    return data, marginals
+end
