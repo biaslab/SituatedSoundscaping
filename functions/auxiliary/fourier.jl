@@ -244,7 +244,7 @@ function singlesided(A)
 end
 
 function rectangularwindow(length::Int64)
-    return ones(length)
+    return ones(length)./length
 end
 
 function triangularwindow(length::Int64)
@@ -293,7 +293,7 @@ function blackmannutallwindow(length::Int64)
     return a0 .- a1*cos.(2*pi*collect(1:length)/length) + a2*cos.(4*pi*collect(1:length)/length) - a2*cos.(6*pi*collect(1:length)/length)
 end
 
-function plot_spectrogram(spec, fs; ax="none", fontsize=16, sparse=false)
+function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false)
 # Info: This function creates a spectrogram
 #
 # Inputs:  spec -       calculated spectrum
