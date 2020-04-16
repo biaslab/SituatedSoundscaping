@@ -244,7 +244,7 @@ function singlesided(A)
 end
 
 function rectangularwindow(length::Int64)
-    return ones(length)./length
+    return ones(length)
 end
 
 function triangularwindow(length::Int64)
