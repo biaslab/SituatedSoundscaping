@@ -106,3 +106,77 @@ end
 function allpass_update(x::Float64, Y::Array{Float64,2}, order::Int, z::Float64; T=nothing, u=nothing) 
     allpass_update(x, Y, order, z+0*im, T=T, u=u)
 end
+
+function allpass_update_matrix_segment(order::Int, input_length::Int, z::Complex{Float64})
+    # this function calculates the large update matrix for an all-pass filter
+        
+    # specify matrices
+    A = [2*real(z) -abs(z)^2 0
+         1 0         0
+         0 1         0         ]
+    B = [abs(z)^2 -2*real(z) 1
+         0         0          0
+         0         0          0]
+    C = [0 0 0
+         1 0 0
+         0 1 0]
+    D = zeros(3,1)
+    D[1] = 1
+    
+    # create matrix T
+    T = [((k<=l) ? B^(l-k) : 0)*((k==1) ? C : A) for l=1:order, k=1:order]
+    T = hvcat(order, permutedims(T,[2,1])...)
+    
+    # create matrix u
+    #u = repeat(D, order)
+    u = [B^(k-1)*D for k=1:order]
+    u = vcat(u...)
+    
+    # convert for use with multiple inputs
+    W = T^input_length
+    U = [W^(k-1)*u for k=1:input_length]
+    U = hcat(U...)
+    
+    # create selection matrix S
+    S = zeros(order, 3*order)
+    for k = 1:order
+        S[k, 1+3*(k-1)] = 1
+    end
+    
+    return W, U, S
+end
+function allpass_update_matrix_segment(order::Int, input_length::Int, z::Float64) 
+    # this function calculates the large update matrix for an all-pass filter
+        
+    # specify matrices
+    A = [z 0
+         1 0]
+    B = [-z 1
+         0  0]
+    C = [0 0
+         1 0]
+    D = zeros(2,1)
+    D[1] = 1
+    
+    # create matrix T
+    T = [((k<=l) ? B^(l-k) : 0)*((k==1) ? C : A) for l=1:order, k=1:order]
+    T = hvcat(order, permutedims(T,[2,1])...)
+    
+    # create matrix u
+    #u = repeat(D, order)
+    u = [B^(k-1)*D for k=1:order]
+    u = vcat(u...)
+    
+    # convert for use with multiple inputs
+    W = T^input_length
+    U = [W^(k-1)*u for k=1:input_length]
+    U = hcat(U...)
+    
+    # create selection matrix S
+    S = zeros(order, 2*order)
+    for k = 1:order
+        S[k, 1+2*(k-1)] = 1
+    end
+    
+    return W, U, S
+end
