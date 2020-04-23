@@ -9,7 +9,31 @@ function calc_C(f::Array{Float64}, t::Array{Float64})
 # Inputs:   f - array with center frequencies of Fourier coefficients
 #           t - time stamps for sinusoidal functions in the C-matrix
 #
-# Outputs:  C - Matrix of dimensions (N, 2M+1), where N represents the amount of
+# Outputs:  C - Matrix of dimensions (N, 2M), where N represents the amount of
+#               time instances and where M represents the amount of frequency
+#               bins, which creates the Fourier decomposition
+
+    # allocate space for matrix C
+    C = Array{Float64}(undef, length(t), 2*length(f))
+
+    # loop through time (rows) and fill matrix C
+    for (idx, ti) in enumerate(t)
+        C[idx, :] = cat(dims=1,sin.(2*pi*f*ti), cos.(2*pi*f*ti))
+    end
+
+    # return matrix C
+    return C
+end;
+calc_C(f::Array{Int64}, t::Array{Float64}) = calc_C(convert(Float64, f), t)
+
+function calc_C_DC(f::Array{Float64}, t::Array{Float64})
+# Info:     This function calculates the Fourier series matrix C, which
+#           decomposes a time-domain signal into its real Fourier coefficients.
+#
+# Inputs:   f - array with center frequencies of Fourier coefficients
+#           t - time stamps for sinusoidal functions in the C-matrix
+#
+# Outputs:  C - Matrix of dimensions (N, 2M), where N represents the amount of
 #               time instances and where M represents the amount of frequency
 #               bins, which creates the Fourier decomposition
 
@@ -24,7 +48,8 @@ function calc_C(f::Array{Float64}, t::Array{Float64})
     # return matrix C
     return C
 end;
-calc_C(f::Array{Int64}, t::Array{Float64}) = calc_C(convert(Float64, f), t)
+calc_C_DC(f::Array{Int64}, t::Array{Float64}) = calc_C(convert(Float64, f), t)
+
 
 function cartesian2polar(a, b)
 # Info:     This function transforms complex numbers in cartesian notation to
@@ -293,7 +318,7 @@ function blackmannutallwindow(length::Int64)
     return a0 .- a1*cos.(2*pi*collect(1:length)/length) + a2*cos.(4*pi*collect(1:length)/length) - a2*cos.(6*pi*collect(1:length)/length)
 end
 
-function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false)
+function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false, colorbar=false)
 # Info: This function creates a spectrogram
 #
 # Inputs:  spec -       calculated spectrum
@@ -325,6 +350,11 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false)
         # set limits of axes
         xlim(first(spec.time), last(spec.time))
         ylim(first(spec.freq), last(spec.freq))
+        
+        # add colorbar
+        if colorbar==true
+            plt.colorbar(cmp, ax=ax)
+        end
 
         # set axes labels
         xlabel("time [sec]", fontsize=fontsize)
@@ -346,12 +376,17 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false)
                 x = soft_thresholding2d(x, y);
             end
         end
-        ax.imshow(reverse(log10.(x), dims=1),
+        cmp = ax.imshow(reverse(log10.(x), dims=1),
                aspect="auto",
                cmap="jet",
                origin="lower",
                extent=[first(spec.time), last(spec.time), last(spec.freq), first(spec.freq)])
-
+        
+        # add colorbar
+        if colorbar==true
+            plt.colorbar(cmp, ax=ax)
+        end
+        
         # set limits of axes
         ax.set_xlim(first(spec.time), last(spec.time))
         ax.set_ylim(first(spec.freq), last(spec.freq))
