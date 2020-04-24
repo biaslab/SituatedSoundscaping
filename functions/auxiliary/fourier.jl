@@ -26,6 +26,32 @@ function calc_C(f::Array{Float64}, t::Array{Float64})
 end;
 calc_C(f::Array{Int64}, t::Array{Float64}) = calc_C(convert(Float64, f), t)
 
+function calc_Cmem(f::Array{Float64}, t::Array{Float64}, told::Array{Float64})
+# Info:     This function calculates the Fourier series matrix C, which
+#           decomposes a time-domain signal into its real Fourier coefficients.
+#
+# Inputs:   f - array with center frequencies of Fourier coefficients
+#           t - time stamps for sinusoidal functions in the C-matrix
+#
+# Outputs:  C - Matrix of dimensions (N, 2M), where N represents the amount of
+#               time instances and where M represents the amount of frequency
+#               bins, which creates the Fourier decomposition
+
+    # allocate space for matrix C
+    C = Array{Float64}(undef, 2*length(t), 4*length(f))
+
+    # loop through time (rows) and fill matrix C
+    for (idx, ti) in enumerate(t)
+        C[(2*idx-1), :] = hcat(hcat(cat(dims=1, sin.(2*pi*freq*ti), cos.(2*pi*freq*ti)), zeros(30))'...)
+        C[2*idx, :] = hcat(hcat(zeros(30), cat(dims=1, sin.(2*pi*freq*(ti-1/8000)), cos.(2*pi*freq*(ti-1/8000))))'...)
+    end
+
+    # return matrix C
+    return C
+end;
+calc_Cmem(f::Array{Int64}, t::Array{Float64}, told::Array{Float64}) = calc_Cmem(convert(Float64, f), t, told)
+
+
 function calc_C_DC(f::Array{Float64}, t::Array{Float64})
 # Info:     This function calculates the Fourier series matrix C, which
 #           decomposes a time-domain signal into its real Fourier coefficients.
@@ -334,7 +360,7 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false, colorb
 
     # plot spectrogram
     if ax == "none"
-        x = spec.power .- minimum(spec.power)
+        x = spec.power #.- minimum(spec.power)
         if sparse
             y = 1e-11
             for k = 1:100
@@ -369,7 +395,7 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false, colorb
     else
 
         # create plot
-        x = spec.power .- minimum(spec.power)
+        x = spec.power #.- minimum(spec.power)
         if sparse
             y = 1e-11
             for k = 1:100
