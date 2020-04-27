@@ -32,3 +32,10 @@ function step_all!(data::Dict, marginals::Dict=Dict())
     # return output
     return data, marginals
 end
+
+# create basis function of len with 1 at location loc
+function em(len::Int, loc::Int)
+    basis_vector = zeros(len)
+    basis_vector[loc] = 1
+    return basis_vector
+end
