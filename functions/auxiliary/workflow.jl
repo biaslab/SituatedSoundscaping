@@ -1,5 +1,7 @@
 # function that pads symbols with underscore and index (two digits)
-pad(sym::Symbol, t::Int) = sym*:_*Symbol(lpad(t,2,'0')) # Left-pads a number with zeros, converts it to symbol and appends to symbol
+#pad(sym::Symbol, t::Int) = sym*:_*Symbol(lpad(t,2,'0')) # Left-pads a number with zeros, converts it to symbol and appends to symbol
+pad(sym::Symbol, t::Int; len=2::Int) = sym*:_*Symbol(lpad(t,len,'0'))
+
 
 # function that drops singleton dimensions
 squeeze(a) = dropdims(a, dims = tuple(findall(size(a) .== 1)...))
