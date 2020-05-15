@@ -388,9 +388,6 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false, colorb
 
         # set ticks
         tick_params(labelsize=fontsize)
-        
-        # create colorbar
-        colorbar()
 
     else
 
@@ -427,4 +424,21 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false, colorb
     end
 
 
+end
+
+
+function twosided2singlesided(x::Array{Complex{Float64}, 2})
+    if size(x,2)%2 == 0
+        return conj.(reverse(x, dims=2)[:, 1:Int(size(x,2)/2)])
+    else
+        
+    end
+end
+
+function singlesided2twosided(x::Array{Complex{Float64}, 2})
+    if size(x,2)%2 == 0
+        return hcat(zeros(size(x,1), 1), x[:,1:end-1], conj.(reverse(x, dims=2)))
+    else
+        
+    end
 end

@@ -17,6 +17,9 @@ function compatibility_fix(algo)
     algo = replace(algo, "Univariate" => "ForneyLab.Univariate")
     algo = replace(algo, "Multivariate" => "ForneyLab.Multivariate")
     algo = replace(algo, "Gamma," => "ForneyLab.Gamma,")
+    algo = replace(algo, "Bernoulli," => "ForneyLab.Bernoulli,")
+    algo = replace(algo, "Wishart," => "ForneyLab.Wishart,")
+    algo = replace(algo, "Beta," => "ForneyLab.Beta,")
     return algo
 end
 

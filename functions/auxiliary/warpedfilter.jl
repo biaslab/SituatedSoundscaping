@@ -87,6 +87,31 @@ function allpass_update_matrix(order::Int, z::Float64)
     allpass_update_matrix(order, z+0*im)
 end
 
+function allpass_update_matrix2(order::Int, z::Float64)
+    # this function calculates the large update matrix for an all-pass filter
+        
+    # specify matrices
+    A = [z 0
+         1 0]
+    B = [-z 1
+         0  0]
+    C = [0 0
+         1 0]
+    D = zeros(2,1)
+    D[1] = 1
+    
+    # create matrix T
+    T = [((k<=l) ? B^(l-k) : 0)*((k==1) ? C : A) for l=1:order, k=1:order]
+    T = hvcat(order, permutedims(T,[2,1])...)
+    
+    # create matrix u
+    #u = repeat(D, order)
+    u = [B^(k-1)*D for k=1:order]
+    u = vcat(u...)
+    
+    return T, u
+end
+
 function allpass_update(x::Float64, Y::Array{Float64,2}, order::Int, z::Complex{Float64}; T=nothing, u=nothing)
     
     # define update matrices if not defined
@@ -106,6 +131,8 @@ end
 function allpass_update(x::Float64, Y::Array{Float64,2}, order::Int, z::Float64; T=nothing, u=nothing) 
     allpass_update(x, Y, order, z+0*im, T=T, u=u)
 end
+
+
 
 function allpass_update_matrix_segment(order::Int, input_length::Int, z::Complex{Float64})
     # this function calculates the large update matrix for an all-pass filter
@@ -179,4 +206,32 @@ function allpass_update_matrix_segment(order::Int, input_length::Int, z::Float64
     end
     
     return W, U, S
+end
+
+function warp_fft(signal::Array{Float64, 1}, z::Float64, len::Int64; step_size=1)
+    # get update matrices
+    T, u = allpass_update_matrix2(len, z)
+    
+    # create current hidden states of filter
+    Y = zeros(2*len)
+    
+    # create array for outputs
+    y = Array{Complex{Float64}, 2}(undef, Int(floor((length(signal) - len)/step_size)), len)
+    
+    # update filter
+    for k = 1:Int(floor((length(signal) - len - 1)/step_size))
+        
+        # update filter
+        for i = 1:step_size
+            Y = T*Y + u*signal[(k-1)*step_size + i]
+        end
+        
+        # calculate FFT and save
+        y[k,:] = FFTW.fft(Y[1:2:end])
+        
+    end
+    
+    return y
+    
+    
 end
