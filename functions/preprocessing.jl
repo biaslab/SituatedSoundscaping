@@ -82,7 +82,7 @@ function reconstruct_warping(x::Array{Float64, 2}, z::Float64, len::Int, step_si
     for ki = 1:size(x,1)
         
         # create vector Y
-        Y = zeros(64)
+        Y = zeros(2*len)
         
         # set values of Y
         Y[1:2:end] = x[ki,:]
