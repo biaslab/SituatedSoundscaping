@@ -1,5 +1,6 @@
 archive
 .ipynb_checkpoints
 signal_models
-midterm\figures\gifpsd_airco
+midterm/figures/gifpsd_airco
+midterm/figures/gifpsd_speech
 

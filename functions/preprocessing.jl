@@ -76,17 +76,21 @@ function reconstruct_warping(x::Array{Float64, 2}, z::Float64, len::Int, step_si
     T, u = allpass_update_matrix2(len, z)
     
     # specify output
-    y = Float64[]
+    yi = Float64[]
     
     # loop through blocks
     for ki = 1:size(x,1)
         
+        y = Float64[]
+        
         # create vector Y
         Y = zeros(2*len)
         
-        # set values of Y
-        Y[1:2:end] = x[ki,:]
-        Y[2:2:end] = x[ki,:]
+        # set values of Y (reverse for inverse operations (Audio Effects Based on Biorthogonal Time-Varying frequency warping))
+        Y[1:2:end] = reverse(x[ki,:])
+        Y[2:2:end] = reverse(x[ki,:])
+        #Y[1:2:end] = (x[ki,:])
+        #Y[2:2:end] = (x[ki,:])
         
         # collect output samples
         for k = 1:step_size
@@ -98,8 +102,11 @@ function reconstruct_warping(x::Array{Float64, 2}, z::Float64, len::Int, step_si
             Y = T*Y + u*0
             
         end
+        
+        yi = vcat(yi, reverse(y))
+        
     end    
-    return y
+    return yi
 end
 
 function warp_ifft(x::Array{Complex{Float64},2}, z::Float64, step_size::Int)
