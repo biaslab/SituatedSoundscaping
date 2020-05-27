@@ -1,7 +1,7 @@
 function normalize(x::Array{Float64, 1}, norm::String)
     # normalizes signal
     if norm == "max"
-        return (x .- mean(x)) ./ maximum(x)
+        return (x .- mean(x)) ./ max(maximum(x), -minimum(x))
     elseif norm == "std"
         return (x .- mean(x)) ./ std(x)
     elseif norm == "var"
@@ -121,4 +121,16 @@ end
 function realimag2fftcoefs(x::Array{Float64, 2})
     z = x[:,1:Int((size(x, 2)+1)/2)] .+ 1im*(hcat(x[:,Int((size(x, 2)+1)/2)+1:end], zeros(size(x,1),1)))
     return hcat(zeros(size(z,1), 1) .+ 0*im, z[:,1:end-1], conj.(reverse(z, dims=2)))
+end
+
+function fft_reduce(X::Array{Complex{Float64},2})
+    if iseven(size(X,2))
+        return X[:,1:Int(size(X,2)/2+1)]
+    else
+        println("to implement odd fft")
+    end
+end
+
+function fft_expand(X::Array{Complex{Float64},2})
+    return hcat(X, reverse(X[:,2:end-1], dims=2))
 end
