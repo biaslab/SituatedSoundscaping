@@ -132,5 +132,5 @@ function fft_reduce(X::Array{Complex{Float64},2})
 end
 
 function fft_expand(X::Array{Complex{Float64},2})
-    return hcat(X, reverse(X[:,2:end-1], dims=2))
+    return hcat(X, reverse(conj.(X[:,2:end-1]), dims=2))
 end
