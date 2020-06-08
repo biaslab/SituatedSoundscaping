@@ -422,8 +422,9 @@ function plot_spectrogram(spec, fs; ax="none", fontsize=10, sparse=false, colorb
         ax.tick_params(labelsize=fontsize)
 
     end
-
-
+    if @isdefined cmp 
+        return cmp
+    end
 end
 
 

@@ -9,6 +9,12 @@ function normalize(x::Array{Float64, 1}, norm::String)
     end
 end
 
+function preprocess(x::Array{Float64,1}, fs::Int64; fs_desired::Int64=8000, normalization_method::String="max")
+    y = resample(x, fs_desired/fs)
+    y = normalize(y, normalization_method)
+    return y
+end;
+
 function μ_law_companding(x::Array{Float64, 1}, μ::Int64)
     # perform μ-law companding
     return sign.(x) .* log.(1 .+ μ*abs.(x)) / log(1 + μ)
