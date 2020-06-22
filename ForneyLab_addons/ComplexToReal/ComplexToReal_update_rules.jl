@@ -1,0 +1,54 @@
+import ForneyLab: unsafeMeanCov, unsafeCov, unsafeMean, unsafePrecision, Multivariate, MatrixVariate
+
+export ruleSPComplexToRealOutNC,
+       ruleSPComplexToRealIn1GN
+
+
+function ruleSPComplexToRealOutNC(marg_rx::Nothing, 
+                                  marg_cx::Message{ComplexNormal})
+
+    # calculate mean of complex random variable
+    μ_cx = unsafeMean(marg_cx.dist)
+    
+    # calculate covariance of complex random variable
+    Γ_cx = unsafeCov(marg_cx.dist)
+    
+    # convert the mean vector μ_cx to the mean vector [real(μ_cx), imag(μ_cx)]
+    μ_rx = vcat(real.(μ_cx), imag.(μ_cx))
+    
+    # calculate precision matrix
+    w_rx = vcat(hcat(0.5*inv(real(Γ_cx)), zeros(size(Γ_cx))), hcat(zeros(size(Γ_cx)), 0.5*inv(real(Γ_cx))))
+        
+    # create sum-product message
+    return Message(Multivariate, GaussianWeightedMeanPrecision, xi=w_rx*μ_rx, w=w_rx)
+
+
+end
+
+
+function ruleSPComplexToRealIn1GN(marg_rx::Message{GaussianWeightedMeanPrecision},
+                                  marg_cx::Nothing)
+
+    # calculate mean of random variable
+    μ_rx = unsafeMean(marg_rx.dist)
+    
+    # calculate covariance of random variable
+    Σ_rx = unsafeCov(marg_rx.dist)
+    
+    # calculate complex vector length
+    N = Int(round(length(μ_rx)/2))
+    
+    # calculate mean vector of complex random variable
+    μ_cx = μ_rx[1:N] + 1im*μ_rx[N+1:end]
+    
+    # calculate complex covariance matrix of complex random variable
+    V_xx = Σ_rx[1:N, 1:N]
+    V_yy = Σ_rx[N+1:end, N+1:end]
+    V_xy = Σ_rx[1:N, N+1:end]
+    V_yx = Σ_rx[N+1:end, 1:N]
+    Γ_cx = V_xx + V_yy .+ 1im*(V_yx-V_xy)
+    
+    # create sum-product message
+    return Message(Multivariate, ComplexNormal, μ=μ_cx, Γ=Γ_cx, C=mat(0.0+0.0im))
+
+end
