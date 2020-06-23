@@ -1,6 +1,6 @@
 using ForneyLab
 using LinearAlgebra
-import ForneyLab: SoftFactor, @ensureVariables, generateId, addNode!, associate!
+import ForneyLab: DeltaFactor, @ensureVariables, generateId, addNode!, associate!
 import ForneyLab: unsafeMeanCov, unsafeCov, unsafeMean, unsafePrecision, Multivariate, MatrixVariate
      
 
@@ -22,7 +22,7 @@ Construction:
 
 """
 
-mutable struct ComplexToReal <: SoftFactor
+mutable struct ComplexToReal <: DeltaFactor
     id::Symbol
     interfaces::Vector{Interface}
     i::Dict{Symbol,Interface}
@@ -72,8 +72,8 @@ function ruleSPComplexToRealOutNC(marg_rx::Nothing,
 end
 
 
-function ruleSPComplexToRealIn1GN(marg_rx::Message{GaussianWeightedMeanPrecision},
-                                  marg_cx::Nothing)
+function ruleSPComplexToRealIn1GN(marg_rx::Message{F1},
+                                  marg_cx::Nothing) where {F1<:Gaussian}
 
     # calculate mean of random variable
     μ_rx = unsafeMean(marg_rx.dist)
@@ -100,11 +100,11 @@ function ruleSPComplexToRealIn1GN(marg_rx::Message{GaussianWeightedMeanPrecision
 end
 
 @sumProductRule(:node_type     => ComplexToReal,
-                :outbound_type => Message{GaussianWeightedMeanPrecision},
+                :outbound_type => Message{Gaussian},
                 :inbound_types => (Nothing, Message{ComplexNormal}),
                 :name          => SPComplexToRealOutNC)
 
 @sumProductRule(:node_type     => ComplexToReal,
                 :outbound_type => Message{ComplexNormal},
-                :inbound_types => (Message{GaussianWeightedMeanPrecision}, Nothing),
+                :inbound_types => (Message{Gaussian}, Nothing),
                 :name          => SPComplexToRealIn1GN)
