@@ -24,7 +24,7 @@ mutable struct ComplexHGF <: SoftFactor
     interfaces::Vector{Interface}
     i::Dict{Symbol,Interface}
 
-    function ComplexHGF(X, ξ; id=generateId(HGF))
+    function ComplexHGF(X, ξ; id=generateId(ComplexHGF))
         
         # ensure that the input arguments are random variables
         @ensureVariables(X, ξ) 
