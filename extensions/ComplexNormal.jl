@@ -47,10 +47,11 @@ slug(::Type{ComplexNormal}) = "𝒩𝒞"
 format(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = "$(slug(ComplexNormal))(μ=$(format(dist.params[:μ])), Γ=$(format(dist.params[:Γ])), C=$(format(dist.params[:C])))"
 
 ProbabilityDistribution(::Type{Multivariate}, ::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Complex{Float64},2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ, :C=>C))
+# ProbabilityDistribution(::Type{Multivariate}, ::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Float64,2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ+0.0im, :C=>C))
 ProbabilityDistribution(::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Complex{Float64},2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ, :C=>C))
-ProbabilityDistribution(::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Float64,2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ.+0im, :C=>C))
+# ProbabilityDistribution(::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Float64,2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ.+0im, :C=>C))
 
-function prod!( x::ProbabilityDistribution{Multivariate, ComplexNormal},
+function ForneyLab.prod!( x::ProbabilityDistribution{Multivariate, ComplexNormal},
                 y::ProbabilityDistribution{Multivariate, ComplexNormal},
                 z::ProbabilityDistribution{Multivariate, ComplexNormal}=ProbabilityDistribution(Multivariate, ComplexNormal, μ=zeros(size(x.params[:μ])).+0im, Γ=(1e10+1e10im)*Ic(length(x.params[:μ])), C=mat(0.0+0.0im)))
 
