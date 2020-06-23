@@ -4,6 +4,6 @@
                       :name          => VariationalComplexHGFOutNP)
 
 @naiveVariationalRule(:node_type     => ComplexHGF,
-                      :outbound_type => Messag{GaussianWeightedMeanPrecision},
+                      :outbound_type => Message{GaussianWeightedMeanPrecision},
                       :inbound_types => (ProbabilityDistribution, Nothing),
                       :name          => VariationalComplexHGFIn1PN)

@@ -25,7 +25,7 @@ Construction:
 """
 
 # create random variable for vectors of gamma distributed RV's
-mutable struct ComplexNormal <: ForneyLab.SoftFactor
+mutable struct ComplexNormal <: SoftFactor
     id::Symbol
     interfaces::Vector{Interface}
     i::Dict{Symbol,Interface}
@@ -34,10 +34,10 @@ mutable struct ComplexNormal <: ForneyLab.SoftFactor
         @ensureVariables(out, μ, Γ, C)
         self = new(id, Array{Interface}(undef, 4), Dict{Symbol,Interface}())
         ForneyLab.addNode!(currentGraph(), self)
-        self.i[:out] = self.interfaces[1] = ForneyLab.associate!(Interface(self), out)
-        self.i[:μ] = self.interfaces[2] = ForneyLab.associate!(Interface(self), μ)
-        self.i[:Γ] = self.interfaces[3] = ForneyLab.associate!(Interface(self), Γ)
-        self.i[:C] = self.interfaces[4] = ForneyLab.associate!(Interface(self), C)
+        self.i[:out] = self.interfaces[1] = associate!(Interface(self), out)
+        self.i[:μ] = self.interfaces[2] = associate!(Interface(self), μ)
+        self.i[:Γ] = self.interfaces[3] = associate!(Interface(self), Γ)
+        self.i[:C] = self.interfaces[4] = associate!(Interface(self), C)
 
         return self
     end
@@ -64,7 +64,7 @@ function prod!( x::ProbabilityDistribution{Multivariate, ComplexNormal},
 end
 
 unsafeMean(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = dist.params[:μ] 
-ForneyLab.unsafeMean(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = dist.params[:μ] 
+#ForneyLab.unsafeMean(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = dist.params[:μ] 
 
 unsafeCov(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = dist.params[:Γ] 
-ForneyLab.unsafeCov(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = dist.params[:Γ]
+#ForneyLab.unsafeCov(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = dist.params[:Γ]
