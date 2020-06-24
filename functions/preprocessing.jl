@@ -129,9 +129,17 @@ function realimag2fftcoefs(x::Array{Float64, 2})
     return hcat(zeros(size(z,1), 1) .+ 0*im, z[:,1:end-1], conj.(reverse(z, dims=2)))
 end
 
-function fft_reduce(X::Array{Complex{Float64},2})
+function fft_reduce(X::Array{Complex{Float64},2}; include_DC=true, include_fs2=true)
     if iseven(size(X,2))
-        return X[:,1:Int(size(X,2)/2+1)]
+        if include_DC
+            return X[:,1:Int(size(X,2)/2+1)]
+        else
+            if include_fs2
+                return hcat(X[:,2:Int(size(X,2)/2)], conj.(X[:,Int(size(X,2)/2)+1]))
+            else
+                return X[:,2:Int(size(X,2)/2)]
+            end
+        end
     else
         println("to implement odd fft")
     end
