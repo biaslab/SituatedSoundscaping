@@ -138,7 +138,7 @@ function FFTovertime(signal::Array{Float64}, len::Int64, overlap::Int64, window;
     # not slow, but fast fourier transform
 
     # calculate the amount of possible windows
-    nr_windows = (length(signal)-l)÷(l-o)
+    nr_windows = (length(signal)-l)÷(l-o)+1
 
     # create placeholder for fft results
     S = Array{Complex{Float64}, 2}(undef, nr_windows, l+pad)
