@@ -45,3 +45,15 @@ function MvNormalΛ(μ, Λ)
     return Distributions.MvNormal(μ, Matrix(Hermitian(inv(Λ))))
 end
 
+function confusionmatrix(k::Integer, gts::Array{Int64,1}, preds::Array{Int64,1})
+    # borrowed from MLBase
+    n = length(gts)
+    length(preds) == n || throw(DimensionMismatch("Inconsistent lengths."))
+    R = zeros(Int, k, k)
+    for i = 1:n
+        @inbounds g = gts[i]
+        @inbounds p = preds[i]
+        R[g, p] += 1
+    end
+    return R
+end
