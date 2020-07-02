@@ -44,3 +44,25 @@ function em(len::Int, loc::Int)
     basis_vector[loc] = 1
     return basis_vector
 end
+
+
+function safeChol(A::Hermitian)
+    # `safeChol(A)` is a 'safe' version of `chol(A)` in the sense
+    # that it adds jitter to the diagonal of `A` and tries again if
+    # `chol` raised a `PosDefException`.
+    # Matrix `A` can be non-positive-definite in practice even though it
+    # shouldn't be in theory due to finite floating point precision.
+    # If adding jitter does not help, `PosDefException` will still be raised.
+    L = similar(A)
+    try
+        L = cholesky(A)
+        catch #Base.LinAlg.PosDefException
+        # Add jitter to diagonal to break linear dependence among rows/columns.
+        # The additive noise is input-dependent to make sure that we hit the
+        # significant precision of the Float64 values with high probability.
+        jitter = Diagonal(1e-13*(rand(size(A,1))) .* diag(A))
+        L = cholesky(A + jitter)
+    end
+end
+ForneyLab.unsafeMean(dist::ProbabilityDistribution{Multivariate, GaussianWeightedMeanPrecision}) = inv(safeChol(Hermitian(dist.params[:w])))*dist.params[:xi]
+unsafeMean(dist::ProbabilityDistribution{Multivariate, GaussianWeightedMeanPrecision}) = inv(safeChol(Hermitian(dist.params[:w])))*dist.params[:xi]
