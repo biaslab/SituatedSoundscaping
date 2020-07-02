@@ -44,7 +44,7 @@ end
 
 slug(::Type{ComplexNormal}) = "𝒩𝒞"
 
-format(dist::ProbabilityDistribution{Multivariate, ComplexNormal}) = "$(slug(ComplexNormal))(μ=$(format(dist.params[:μ])), Γ=$(format(dist.params[:Γ])), C=$(format(dist.params[:C])))"
+ForneyLab.format(dist::ProbabilityDistribution{V, ComplexNormal}) where V<:ForneyLab.VariateType = "$(slug(ComplexNormal))(μ=$(format(dist.params[:μ])), Γ=$(format(dist.params[:Γ])) C=$(format(dist.params[:C])))"
 
 ProbabilityDistribution(::Type{Multivariate}, ::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Complex{Float64},2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ, :C=>C))
 # ProbabilityDistribution(::Type{Multivariate}, ::Type{ComplexNormal}; μ::Array{Complex{Float64},1}, Γ::Array{Float64,2}, C::Array{Complex{Float64},2}) = ProbabilityDistribution{Multivariate, ComplexNormal}(Dict(:μ=>μ, :Γ=>Γ+0.0im, :C=>C))
@@ -139,3 +139,57 @@ ruleVBComplexNormalIn1(dist_out::ProbabilityDistribution{Multivariate},
                       :outbound_type => Message{ComplexNormal},
                       :inbound_types => (ProbabilityDistribution, Nothing, ProbabilityDistribution, ProbabilityDistribution),
                       :name          => VBComplexNormalIn1)
+
+function ForneyLab.format(d::Array{T,1}) where T<:Complex{Float64}
+    s = "["
+    for d_k in d[1:end-1]
+        s*=format(d_k)
+        s*=", "
+    end
+    s*=format(d[end])
+    s*="]"
+    return s
+end
+function ForneyLab.format(d::T) where T<:Complex{Float64}
+    s = "["
+    for d_k in d[1:end-1]
+        s*=format(d_k)
+        s*=", "
+    end
+    s*=format(d[end])
+    s*="]"
+    return s
+end
+function ForneyLab.format(d::Matrix{T}) where T<:Complex{Float64}
+    s = "["
+    for r in 1:size(d, 1)
+        s *= format(vec(d[r,:]))
+    end
+    s *= "]"
+    return s
+end
+function format(d::Matrix{T}) where T<:Complex{Float64}
+    s = "["
+    for r in 1:size(d, 1)
+        s *= format(vec(d[r,:]))
+    end
+    s *= "]"
+    return s
+end
+function format(d::Array{T,1}) where T<:Complex{Float64}
+    s = "["
+    for d_k in d[1:end-1]
+        s*=format(d_k)
+        s*=", "
+    end
+    s*=format(d[end])
+    s*="]"
+    return s
+end
+function format(d::T) where T<:Complex{Float64}
+    if false#0.01 < d < 100.0 || -100 < d < -0.01 || d==0.0
+        return @sprintf("%.2f", real(d))*" + "*@sprintf("%.2f", imag(d))*"im"
+    else
+        return @sprintf("%.2e", real(d))*" + "*@sprintf("%.2e", imag(d))*"im"
+    end
+end
