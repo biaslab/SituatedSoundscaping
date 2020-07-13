@@ -91,10 +91,11 @@ function ruleVariationalARFBIn1PNPP(marg_y::ProbabilityDistribution{Multivariate
 
     # calculate new parameters
     wx = (vθ' + mθ*mθ') .* mw
-    mx = inv(wx) * Diagonal(mθ) * mw * my
-
+    # mx = inv(wx) * Diagonal(mθ) * mw * my
+    xix = Diagonal(mθ) * mw' * my
+    
     # create variational message
-    return Message(Multivariate, GaussianWeightedMeanPrecision, xi=wx*mx, w=wx)
+    return Message(Multivariate, GaussianWeightedMeanPrecision, xi=xix, w=wx)
 
 end
 
@@ -114,10 +115,10 @@ function ruleVariationalARFBIn2PPNP(marg_y::ProbabilityDistribution{Multivariate
 
     # calculate new parameters
     wθ = (vx' + mx*mx') .* mw
-    mθ = inv(wθ) * Diagonal(mx) * mw * my
+    xix = Diagonal(mx) * mw' * my
 
     # create variational message
-    Message(Multivariate, GaussianWeightedMeanPrecision, xi=wθ*mθ, w=wθ)
+    Message(Multivariate, GaussianWeightedMeanPrecision, xi=xix, w=wθ)
 
 end
 
