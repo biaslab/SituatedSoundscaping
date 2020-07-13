@@ -183,7 +183,7 @@ function PSDovertime(signal::Array{Float64}, len::Int64, overlap::Int64, window;
     w = window
 
     # create placeholder for fft
-    windows = (length(signal)-l)÷(l-o)
+    windows = (length(signal)-l)÷(l-o)+1
     S = Array{Float64, 2}(undef, windows, l+pad)
 
     # fill array
@@ -191,9 +191,9 @@ function PSDovertime(signal::Array{Float64}, len::Int64, overlap::Int64, window;
 
         # calculate PSD
         if pad == 0
-            x = s[1+(k-1)*o:l+(k-1)*o].*window(l)
+            x = s[1+(k-1)*(l-o):l+(k-1)*(l-o)].*window(l)
         else
-            x = vcat(s[1+(k-1)*o:l+(k-1)*o].*window(l), zeros(pad))
+            x = vcat(s[1+(k-1)*(l-o):l+(k-1)*(l-o)].*window(l), zeros(pad))
         end
         S[k,:] = abs2.(FFTW.fft(x))
 
@@ -435,8 +435,22 @@ function twosided2singlesided(x::Array{Complex{Float64}, 2})
         
     end
 end
+function twosided2singlesided(x::Array{Float64, 2})
+    if size(x,2)%2 == 0
+        return x[:, 1:Int(size(x,2)/2)]
+    else
+        
+    end
+end
 
 function singlesided2twosided(x::Array{Complex{Float64}, 2})
+    if size(x,2)%2 == 0
+        return hcat(zeros(size(x,1), 1), x[:,1:end-1], conj.(reverse(x, dims=2)))
+    else
+        
+    end
+end
+function singlesided2twosided(x::Array{Float64, 2})
     if size(x,2)%2 == 0
         return hcat(zeros(size(x,1), 1), x[:,1:end-1], conj.(reverse(x, dims=2)))
     else
