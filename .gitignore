@@ -3,4 +3,6 @@ archive
 signal_models
 midterm/figures/gifpsd_airco
 midterm/figures/gifpsd_speech
-
+final/figures
+final/inferred
+final/audio
