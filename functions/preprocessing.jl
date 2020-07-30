@@ -6,6 +6,8 @@ function normalize(x::Array{Float64, 1}, norm::String)
         return (x .- mean(x)) ./ std(x)
     elseif norm == "var"
         return (x .- mean(x)) ./ var(x)
+    elseif norm == "pow"
+        return (x .- mean(x)) ./ mean(abs2.(x .- mean(x)))
     end
 end
 
@@ -58,10 +60,10 @@ function warp_fft(signal::Array{Float64, 1}, z::Float64, len::Int64; step_size::
     Y = zeros(2*len)
     
     # create array for outputs
-    y = Array{Complex{Float64}, 2}(undef, Int(floor((length(signal) - len)/step_size)), len)
+    y = Array{Complex{Float64}, 2}(undef, (length(signal)-len)÷(step_size)+len÷step_size, len)
     
     # update filter
-    for k = 1:Int(floor((length(signal) - len - 1)/step_size))
+    for k = 1:(length(signal)-len)÷(step_size)+len÷step_size
         
         # update filter
         for i = 1:step_size
@@ -73,7 +75,36 @@ function warp_fft(signal::Array{Float64, 1}, z::Float64, len::Int64; step_size::
         
     end
     
-    return y
+    return y[len÷step_size:end,:]
+    
+end
+
+function warp_fft2(signal::Array{Float64, 1}, z::Float64, len::Int64; step_size::Int64=1)
+    # get update matrices
+    T, u = allpass_update_matrix2(len, z)
+    
+    # create current hidden states of filter
+    Y = zeros(2*len)
+    
+    # create array for outputs
+    y = Array{Complex{Float64}, 2}(undef, (length(signal)-len)÷(step_size)+len÷step_size, len)
+    Ysave = Array{Float64, 2}(undef, (length(signal)-len)÷(step_size)+len÷step_size, len)
+    
+    # update filter
+    for k = 1:(length(signal)-len)÷(step_size)+len÷step_size
+        
+        # update filter
+        for i = 1:step_size
+            Y = T*Y + u*signal[(k-1)*step_size + i]
+        end
+        
+        # calculate FFT and save
+        Ysave[k,:] = Y[1:2:end]
+        y[k,:] = FFTW.fft(Y[1:2:end])
+        
+    end
+    
+    return y[len÷step_size:end,:], Ysave[len÷step_size:end,:]
     
 end
 
