@@ -1,2 +1,4 @@
 [deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 WAV = "8149f6b0-98f6-5db9-b78f-408fbbb8ef88"
