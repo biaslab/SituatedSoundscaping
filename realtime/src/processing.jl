@@ -1,4 +1,5 @@
 # included functions:
+#   calculate_spectra(x::AbstractArray{T,1}, block_length::Int64, block_overlap::Int64; onesided::Bool, fs::Int64, window::Function)
 #   preprocess(y_tmp::AbstractArray{T,1}, fs_temp::Real; fs::Real, duration::Real, level_dB::Real, subtract_mean::Bool, normalize_std::Bool))
 #   addPowerGaindB!(a::AbstractArray, g::Real)
 #   addPowerGain!(a::AbstractArray, g::Real)
@@ -6,6 +7,44 @@
 #   normalizeVar!(a::AbstractArray)
 #   normalizeStd!(a::AbstractArray)
 #   subtractMean!(a::AbstractArray)
+
+
+#   calculate_spectra, calculate_spectra_broadcast
+#
+#   info:
+#       This function calculates the frequency and log-power spectrum.
+#
+#   input arguments:
+#       x::AbstractArray{T,1}           - Single dimension array with arbitrary contents
+#       fs_in::Real                     - Input sampling rate
+#       fs::Real                        - Desired sampling rate
+#       duration::Real                  - Time of signal in seconds
+#       level_dB::Real                  - Gain factor in dB
+#       subtract_mean::Bool             - Flag whether to subtract the mean
+#       normalize_std::Bool             - Flag whether to normalize its power to unity
+#   output arguments:
+#       y::Array{Float64,1}             - Array of preprocessed data
+
+function calculate_spectra(x::AbstractArray{T,1}, block_length::Int64, block_overlap::Int64; onesided::Bool=true, fs::Int64=16000, window::Function=rect) where {T}
+
+    # calculate the short-time frequency spectrum
+    X = stft(x, block_length, block_overlap; onesided=onesided, fs=fs, window=window)
+
+    # remove DC and fs/2
+    X = X[2:end-1,:]
+
+    # calculate log-power spectrum 
+    logX2 = @. log(abs2(X))
+    
+    # return spectra
+    return X, logX2
+
+end
+
+function calculate_spectra_broadcast(x::AbstractArray{T,1}, block_length::Int64, block_overlap::Int64; onesided::Bool=true, fs::Int64=16000, window::Function=rect) where {T}
+    return  map(y->getindex.(calculate_spectra.(x, block_length, block_overlap; onesided=onesided, fs=fs, window=window), y), 1:2)
+end
+
 
 #   preprocess
 #

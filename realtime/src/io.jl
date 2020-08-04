@@ -2,7 +2,7 @@ using WAV: wavread
 using DSP: resample
 
 
-function load_data(filenames::Array{String,1}; fs::Real=16000, duration::Union{Array{Float64,1}, Array{Int64,1}}=[1,1], levels_dB::Union{Array{Int64,1}, Array{Float64,1}}=zeros(length(filenames)), subtract_mean::Bool=true, normalize_std::Bool=true)
+function load_data(filenames::Array{String,1}; fs::Real=16000, duration::AbstractArray{T,1}=[1,1], levels_dB::AbstractArray{T,1}=zeros(length(filenames)), subtract_mean::Bool=true, normalize_std::Bool=true) where {T}
 
     # create array for data files
     y_train = Array{Array{Float64,1},1}(undef, length(filenames))
