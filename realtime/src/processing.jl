@@ -31,7 +31,7 @@ function calculate_spectra(x::AbstractArray{T,1}, block_length::Int64, block_ove
     X = stft(x, block_length, block_overlap; onesided=onesided, fs=fs, window=window)
 
     # remove DC and fs/2
-    X = X[2:end-1,:]
+    X = collect(transpose(X[2:end-1,:]))
 
     # calculate log-power spectrum 
     logX2 = @. log(abs2(X))
