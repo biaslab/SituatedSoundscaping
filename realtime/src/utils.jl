@@ -6,7 +6,6 @@
 #   numtodB20(a::Real)
 
 
-
 #   squeeze
 #
 #   info:

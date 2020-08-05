@@ -65,7 +65,7 @@ end
 function preprocess(x::AbstractArray{T,1}, fs_in::Real; fs::Real=16000, duration::Real=1, level_dB::Real=0, subtract_mean::Bool=true, normalize_std::Bool=true) where {T}
 
     # resample signal
-    y = resample(x, fs_in/fs)
+    y = resample(x, fs/fs_in)
 
     # crop signal
     y = y[1:duration*fs]
