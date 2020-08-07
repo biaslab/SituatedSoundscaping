@@ -14,7 +14,7 @@ mutable struct GSMM{T<:Float64}
     function GSMM(w::AbstractArray{T,1}, μ::AbstractArray{T,2}, Λ::AbstractArray{T,2}) where T
         n = length(w)
         Σ = 1 ./ Λ
-        abs(1 - sum(w)) < 1e-10 || error("weights do not sum to one")
+        abs(1 - sum(w)) < 1e-10 || error("weights do not sum to one", w)
         d = size(μ, 1)
         n == size(μ, 2) || error("Inconsistent number of means")
         (d,n) == size(Σ) || error("Inconsistent covar dimension")
