@@ -1,7 +1,7 @@
 using WAV
 using DSP
 using BenchmarkTools
-using Statistics
+using Statistics, Dates
 using GaussianMixtures
 using PyPlot
 
@@ -42,40 +42,13 @@ models = train_GSMM.(X_train, logX_train, nr_clusters; its=100)
 # perform informed source separation
 x_separated, X_sep = separate_sources(X_mixture, models, σ2_noise)
 
+# export results
+export_results(x_separated, x_test, x_mixture, X_sep, X_test, X_mixture, power_levels, audio_files; fs=fs)
+
 ## pseudo code
 # [✓] load data
 # [✓] convert into freq + log-power fragments
 # [✓] train
 # [✓] test
-
-# [ ] smart cluster assignment
-
-@btime separate_sources(X_mixture, models, σ2_noise)
-
-
-plt.clf() 
-_ , ax = plt.subplots(nrows=3, figsize=(15,15))
-ax[1].plot(x_mixture)
-ax[2].plot(x_test[1].-5)
-ax[2].plot(x_separated[1].+5)
-ax[3].plot(x_test[2].-5)
-ax[3].plot(x_separated[2].+5)
-plt.gcf()
-
-plt.clf()
-_, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,15))
-ax[1].imshow(models[1].μ, origin="lower")
-ax[2].imshow(models[2].μ, origin="lower")
-plt.gcf()
-
-plt.clf()
-plt.imshow(log.(abs2.(collect(transpose(X_sep[2])))), origin="lower", aspect="auto")
-plt.colorbar()
-#plt.clim(8,-17)
-plt.gcf()
-
-plt.clf()
-plt.imshow(log.(abs2.(collect(transpose(X_test[1])))), origin="lower")
-plt.colorbar()
-plt.gcf()
-
+# [✓] visualisation
+# [ ] smart cluster assignment (extra)
