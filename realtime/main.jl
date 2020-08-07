@@ -9,10 +9,11 @@ include("src/io.jl")
 include("src/utils.jl")
 include("src/processing.jl")
 include("src/train.jl")
+include("src/separation.jl")
 
 # settings
 audio_files = ["audio/woman.wav",               # paths to audio files
-               "audio/cocktail_party.wav"]      
+               "audio/cafeteria.wav"]      
 fs = 16000                                      # desired sampling frequency [Hz]
 subtract_mean = true;                           # subtract the mean during preprocessing
 normalize_std = true;                           # normalize with standard deviation during preprocessing
@@ -24,6 +25,7 @@ block_length = 100                              # length of processing blocks [s
 block_overlap_train = 90                        # overlap inbetween blocks during training [samples]
 block_overlap_test = 50                         # overlap inbetween blocks during testing [samples]
 nr_clusters = [15, 10]                          # number of clusters per model
+σ2_noise = 1e-4                                 # observation noise variance
 
 # load and preprocess data 
 x_train, x_test = load_data(audio_files; fs=fs, duration=[duration_train, duration_test], offset=offset, levels_dB=power_levels, subtract_mean=subtract_mean, normalize_std=normalize_std);
@@ -35,30 +37,45 @@ X_test, logX_test = calculate_spectra_broadcast(x_test, block_length, block_over
 X_mixture, logX_mixture = calculate_spectra(x_mixture, block_length, block_overlap_test; onesided=true, fs=fs, window=hanning);
 
 # train models 
-models = train_GSMM.(X_train, logX_train, nr_clusters; its=10)
+models = train_GSMM.(X_train, logX_train, nr_clusters; its=100)
 
 # perform informed source separation
-x_sep = separate_sources(x_mixture, models)
-
-
+x_separated, X_sep = separate_sources(X_mixture, models, σ2_noise)
 
 ## pseudo code
 # [✓] load data
 # [✓] convert into freq + log-power fragments
 # [✓] train
-# [ ] test
+# [✓] test
+
 # [ ] smart cluster assignment
 
-logX2 = logX_train[1]
-X = X_train[1]
-# stage 1 & 2: K-means & EM training
-gmm = GMM(25, logX2, nIter=50, nInit=100, kind=:diag)
-em!(gmm, logX2)
+@btime separate_sources(X_mixture, models, σ2_noise)
+
+
+plt.clf() 
+_ , ax = plt.subplots(nrows=3, figsize=(15,15))
+ax[1].plot(x_mixture)
+ax[2].plot(x_test[1].-5)
+ax[2].plot(x_separated[1].+5)
+ax[3].plot(x_test[2].-5)
+ax[3].plot(x_separated[2].+5)
+plt.gcf()
 
 plt.clf()
-plt.imshow(transpose(logX_train[1]), aspect="auto", origin="lower")
+_, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,15))
+ax[1].imshow(models[1].μ, origin="lower")
+ax[2].imshow(models[2].μ, origin="lower")
+plt.gcf()
+
+plt.clf()
+plt.imshow(log.(abs2.(collect(transpose(X_sep[2])))), origin="lower", aspect="auto")
 plt.colorbar()
-plt.clim(-15,5)
-gcf()
-plt.imshow(params[2].μ, origin="lower")
-gcf()
+#plt.clim(8,-17)
+plt.gcf()
+
+plt.clf()
+plt.imshow(log.(abs2.(collect(transpose(X_test[1])))), origin="lower")
+plt.colorbar()
+plt.gcf()
+
