@@ -10,6 +10,7 @@ include("src/utils.jl")
 include("src/processing.jl")
 include("src/train.jl")
 include("src/separation.jl")
+include("src/export.jl")
 
 # settings
 audio_files = ["audio/woman.wav",               # paths to audio files
@@ -21,10 +22,10 @@ power_levels = [0, -5]                          # specify desired signal amplifi
 duration_train = 3                              # duration of training data [sec]
 duration_test = 10                              # duration of testing data [sec]
 offset = 1                                      # offset in audio signal [sec]
-block_length = 100                              # length of processing blocks [samples]
-block_overlap_train = 90                        # overlap inbetween blocks during training [samples]
-block_overlap_test = 50                         # overlap inbetween blocks during testing [samples]
-nr_clusters = [15, 10]                          # number of clusters per model
+block_length = 160                              # length of processing blocks [samples]
+block_overlap_train = 144                       # overlap inbetween blocks during training [samples]
+block_overlap_test = 80                         # overlap inbetween blocks during testing [samples]
+nr_clusters = [15, 15]                          # number of clusters per model
 σ2_noise = 1e-4                                 # observation noise variance
 
 # load and preprocess data 
