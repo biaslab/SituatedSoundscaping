@@ -4,23 +4,27 @@ mutable struct GSMM{T<:Float64}
     "dimension of Gaussian"
     d::Int
     "weights (size n)"
-    w::AbstractArray{T,1}
+    w::Array{T,1}
     "means (size d x n)"
-    μ::AbstractArray{T,2}
+    μ::Array{T,2}
     "covariances (size d x n)"
-    Σ::AbstractArray{T,2}
-    function GSMM(w::AbstractArray{T,1}, μ::AbstractArray{T,2}, Σ::AbstractArray{T,2}) where T
+    Σ::Array{T,2}
+    "covariances of messages to frequency domain (size d x n)"
+    Σf::Array{T,2}
+    function GSMM(w::AbstractArray{T,1}, μ::AbstractArray{T,2}, Λ::AbstractArray{T,2}) where T
         n = length(w)
+        Σ = 1 ./ Λ
         abs(1 - sum(w)) < 1e-10 || error("weights do not sum to one")
         d = size(μ, 1)
         n == size(μ, 2) || error("Inconsistent number of means")
         (d,n) == size(Σ) || error("Inconsistent covar dimension")
+        Σf = exp.(μ - Σ/2)
 
-        new{T}(n, d, w, μ, Σ)
+        new{T}(n, d, w, μ, Σ, Σf)
     end
 end
 
-Base.eltype(gmm::GSMM{T}) where {T} = T
+Base.eltype(gsmm::GSMM{T}) where {T} = T
 
 
 
