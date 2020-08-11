@@ -80,11 +80,14 @@ function export_results(x_sep::Array{Array{Float64,1},1}, x_true::Array{Array{Fl
 
     ## save audio filenames
     for k = 1:length(filenames)
-        wavwrite(x_test[k], folder_path*"/original_"*split(split(filenames[k], ".")[1], "/")[2]*""*string(gains[k])*"dB.wav", Fs=fs)
-        wavwrite(x_sep[k], folder_path*"/separated_"*split(split(filenames[k], ".")[1], "/")[2]*""*string(gains[k])*"dB.wav", Fs=fs)
+        wavwrite(limit1(x_test[k]), folder_path*"/original_"*split(split(filenames[k], ".")[1], "/")[2]*string(gains[k])*"dB.wav", Fs=fs)
+        wavwrite(limit1(x_sep[k]), folder_path*"/separated_"*split(split(filenames[k], ".")[1], "/")[2]*string(gains[k])*"dB.wav", Fs=fs)
     end
-    wavwrite(x_mix, folder_path*"/mixture.wav", Fs=fs)
-    wavwrite(x_mix, folder_path*"/noisy_"*split(split(filenames[1], ".")[1], "/")[2]*""*string(gains[1])*"dB.wav", Fs=fs)
+
+    wavwrite(limit1(x_test[1]), folder_path*"/original_"*join([split(split(filenames[k], ".")[1], "/")[2] for k = 1:length(filenames)])*string(gains[2])*"dB.wav", Fs=fs)
+    wavwrite(limit1(x_sep[1]), folder_path*"/separated_"*join([split(split(filenames[k], ".")[1], "/")[2] for k = 1:length(filenames)])*string(gains[2])*"dB.wav", Fs=fs)
+    wavwrite(limit1(x_mix), folder_path*"/mixture.wav", Fs=fs)
+    wavwrite(limit1(x_mix), folder_path*"/noisy_"*join([split(split(filenames[k], ".")[1], "/")[2] for k = 1:length(filenames)])*string(gains[2])*"dB.wav", Fs=fs)
 
     ## copy setting from main.jl file
     cp("main.jl", folder_path*"/main.jl")

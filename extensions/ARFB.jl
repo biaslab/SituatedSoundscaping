@@ -169,7 +169,7 @@ end
 
 
 function AR_PSD(θ::Array{Float64,1}, ω::Float64, ρ::Float64, σ2::Float64)::Array{Float64,1}
-    return σ2 ./ (1 .+ ρ^2 .- 2*ρ*cos.(θ.-ω))
+    return σ2 ./ (1 .+ ρ^2 .- 2*ρ*cos.(θ.-ω)) ./2
 end
 
 function sum_AR_PSD(θ::Array{Float64,1}, ω::Array{Float64,1}, ρ::Array{Float64,1}, σ2::Array{Float64,1})::Array{Float64,1}

@@ -5,6 +5,10 @@
 #   dB20toNum(a::Real)
 #   numtodB20(a::Real)
 
+function limit1(x::Array{Float64,1})
+
+    return x./maximum([-minimum(x), maximum(x)])
+end
 
 #   squeeze
 #
