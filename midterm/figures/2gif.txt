@@ -1,1 +1,0 @@
-ffmpeg -i mf_psd_gif_%06.png mf_out.gif

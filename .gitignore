@@ -1,4 +1,11 @@
 archive
+00-archive
+00-inferred_values
+05-thesis/audio
+inferred
+inferred_values
+figures
+/audio
 .ipynb_checkpoints
 signal_models
 midterm/figures/gifpsd_airco
