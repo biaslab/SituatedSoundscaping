@@ -14,11 +14,11 @@ include("src/export.jl")
 
 # settings
 audio_files = ["audio/woman.wav",               # paths to audio files
-               "audio/cafeteria.wav"]      
+               "audio/cocktailparty.wav"]      
 fs = 16000                                      # desired sampling frequency [Hz]
 subtract_mean = true;                           # subtract the mean during preprocessing
 normalize_std = true;                           # normalize with standard deviation during preprocessing
-power_levels = [0, 10]                          # specify desired signal amplification in the mixture [dB]
+power_levels = [0, 5]                           # specify desired signal amplification in the mixture [dB]
 duration_train = 3                              # duration of training data [sec]
 duration_test = 10                              # duration of testing data [sec]
 offset = 1                                      # offset in audio signal [sec]

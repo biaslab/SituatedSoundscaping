@@ -66,11 +66,15 @@ function export_results(x_sep::Array{Array{Float64,1},1}, x_true::Array{Array{Fl
         ax[k,1].imshow(collect(transpose(log.(abs.(X_test[k])))), aspect="auto", origin="lower", cmap="jet", extent=[0, length(x_mix)/fs, 0, fs/2])
         ax[k,1].set_title("true: "*split(split(filenames[k], ".")[1], "/")[2])
         vrange = ax[k,1].get_images()[1].get_clim()
+        ax[k,1].set_xlabel("time [sec]")
+        ax[k,1].set_ylabel("Frequency [Hz]")
         
         # plot predicted spectrogram
         ax[k,2].imshow(collect(transpose(log.(abs.(X_sep[k])))), aspect="auto", origin="lower", cmap="jet", extent=[0, length(x_mix)/fs, 0, fs/2])
         ax[k,2].set_title("separated: "*split(split(filenames[k], ".")[1], "/")[2])
         ax[k,2].get_images()[1].set_clim(vrange)
+        ax[k,2].set_xlabel("time [sec]")
+        ax[k,2].set_ylabel("Frequency [Hz]")
 
     end
 
