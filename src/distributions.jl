@@ -1,0 +1,10 @@
+include("distributions/normal.jl")
+include("distributions/gamma.jl")
+include("distributions/categorical.jl")
+include("distributions/dirichlet.jl")
+include("distributions/complexnormal.jl")
+
+include("distributions/normalvector.jl")
+include("distributions/gammavector.jl")
+include("distributions/dirichletmatrix.jl")
+include("distributions/complexnormalvector.jl")

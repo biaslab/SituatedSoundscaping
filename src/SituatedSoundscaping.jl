@@ -9,7 +9,11 @@ module SituatedSoundscaping
     @info "===   SITUATED SOUNDSCAPING   ==="
     @info "================================="
 
-    
+    # include helpers
+    include("helpers.jl");
+
+    # include custom distributions
+    include("distributions.jl");
 
 end # module
 

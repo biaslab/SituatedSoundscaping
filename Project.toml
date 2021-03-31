@@ -4,6 +4,8 @@ authors = ["Bart van Erp <b.v.erp@tue.nl>"]
 version = "1.0.0"
 
 [deps]
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 GraphPPL = "b3f8163a-e979-4e85-b43e-1f63d8c8b42c"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 ReactiveMP = "a194aa59-28ba-4574-a09c-4a745416d6e3"
