@@ -1,4 +1,6 @@
 .vscode
 archive
-data
+data/
+!src/data/
 docs
+models

@@ -15,8 +15,9 @@ module SituatedSoundscaping
     # include custom distributions
     include("distributions.jl");
 
-    # include data object
-    include("data.jl")
+    # include data object and data preparation
+    include("data/data.jl")
+    include("data/prepare_data.jl")
 
     # include warped filter bank
     include("warp.jl")
