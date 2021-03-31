@@ -1,4 +1,4 @@
-.vscode/*
-archive/*
-data/*
-docs/build/
+.vscode
+archive
+data
+docs
