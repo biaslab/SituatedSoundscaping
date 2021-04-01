@@ -27,5 +27,8 @@ module SituatedSoundscaping
     include("training/em.jl")
     include("training/gs.jl")
 
+    # include model reduction procedures
+    include("adjustment/update_recording.jl")
+
 end # module
 
