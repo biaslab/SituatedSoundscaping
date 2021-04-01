@@ -25,6 +25,7 @@ module SituatedSoundscaping
     # include training procedures
     include("training/kmeans.jl")
     include("training/em.jl")
+    include("training/gs.jl")
 
 end # module
 
