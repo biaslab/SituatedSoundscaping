@@ -33,6 +33,9 @@ function squeeze(A::AbstractArray{T,N}) where {T,N}
 
 end
 
+"""
+Add an extra singleton dimension after the last dimension of the array.
+"""
 add_dim(x::Array) = reshape(x, (size(x)...,1))
 
 

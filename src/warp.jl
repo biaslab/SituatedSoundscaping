@@ -1,3 +1,5 @@
+using LinearAlgebra: I, diagm
+
 mutable struct warped_filter_bank
     block_duration_s::Float64
     calculate_gain::Function
@@ -80,8 +82,6 @@ function calculate_analysis_window(nr_fft::Int64)
     return window_full
 end
 
-I(x::Int64) = collect(eye(x))
-
 function calculate_synthesis_matrix(nr_bands::Int64, nr_fft::Int64)
     nr_half = Int64(nr_fft / 2)
   
@@ -89,11 +89,11 @@ function calculate_synthesis_matrix(nr_bands::Int64, nr_fft::Int64)
     synthesis_matrix = real(DSP.fft(eye(nr_fft), 1)) / nr_fft
   
     # Extend the synthesis matrix to even symmetry
-    extender_matrix = [I(nr_bands); reverse(I(nr_bands), dims=1)[2:Int64(nr_bands) - 1, :]]
+    extender_matrix = [eye(nr_bands); reverse(eye(nr_bands), dims=1)[2:Int64(nr_bands) - 1, :]]
     synthesis_matrix = synthesis_matrix * extender_matrix
   
     # Center non-unique filter coefficients around the middle tap
-    synthesis_matrix = reverse(I(nr_half), dims=2) * synthesis_matrix[1:nr_half, :]
+    synthesis_matrix = reverse(eye(nr_half), dims=2) * synthesis_matrix[1:nr_half, :]
   
     # Currently only the Hann window is supported. This could be extended to
     # arbitrary windows of the correct size

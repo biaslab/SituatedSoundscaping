@@ -34,8 +34,13 @@ function prepare_data(input_folder::String, output_folder::String; block_length:
     output_files = String[]
     if !isdir(output_folder)
         mkdir(output_folder)
+
+        # create filter bank
+        filterbank = warped_filter_bank(block_duration_s=block_length/16000, nr_bands=Int(block_length/2)+1)
+
         ProgressMeter.@showprogress for (ind, file) in enumerate(filenames)
 
+            
             # load data
             x_tmp, fs_tmp = load(file)
 
@@ -43,19 +48,25 @@ function prepare_data(input_folder::String, output_folder::String; block_length:
             x_tmp = squeeze(x_tmp)
             @assert length(size(x_tmp)) == 1
             x_tmp = resample(x_tmp, fs/fs_tmp)
-            x_tmp = x_tmp + 1e-5*randn(length(x_tmp))
-            x_tmp = x_tmp .- mean(x_tmp)
+            x_tmp .+= 1e-5*randn(length(x_tmp))
+            x_tmp .-= mean(x_tmp)
 
             # convert to spectrum
-            y_tmp = stft(x_tmp, block_length, block_length-step_size; onesided=true, fs=fs, window=window)
-            y_tmp = transpose(y_tmp)
-            y_tmp = log.(abs2.(y_tmp))
-            y_tmp = collect(y_tmp')
+            Xs = Array{Complex{Float64},2}(undef, Int(floor(length(x_tmp)/block_length)), Int(block_length/2+1))
+            ξs = Array{Float64,2}(undef, Int(floor(length(x_tmp)/block_length)), Int(block_length/2+1))
+            for k = 1:Int(floor(length(x_tmp)/block_length))
+                run!(filterbank, x_tmp[1+(k-1)*block_length:k*block_length])
+                Xs[k,:] = get_frequency_coefficients(filterbank)
+                ξs[k,:] = get_power(filterbank)
+            end
+            # y_tmp = stft(x_tmp, block_length, block_length-step_size; onesided=true, fs=fs, window=window)
+            # y_tmp = log.(abs2.(y_tmp))
 
             # save file
             append!(output_files, [output_folder*"/"*string(ind, pad=10)*".h5"])
-            h5write(last(output_files), "data", y_tmp)
-            h5write(last(output_files), "size", collect(size(y_tmp)))
+            h5write(last(output_files), "data_logpower", ξs)
+            h5write(last(output_files), "data_complex", Xs)
+            h5write(last(output_files), "size", collect(size(ξs)))
 
         end
 
