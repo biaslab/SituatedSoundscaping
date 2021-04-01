@@ -39,11 +39,11 @@ function FileIO.save(file::AbstractString, x::Matrix)
     save(file,"data", x)
 end
 
-function Base.getindex(x::Data, i::Int)
+function Base.getindex(x::Data, i::Int, item::String)
     if kind(x) == :matrix
         x.list[i]
     elseif kind(x) == :file
-        myread(x.list[i])
+        myread(x.list[i], item)
     else
         error("Unknown kind")
     end
@@ -59,15 +59,7 @@ end
 
 ## define an iterator for Data
 Base.length(x::Data) = length(x.list)
-function Base.iterate(x::Data, state=1)
-    count = state
 
-    if(count > length(x.list))
-        return nothing
-    else
-        return (x[count], count+1)
-    end
-end
 
 ## This function is like pmap(), but executes each element of Data on a predestined
 ## worker, so that file caching at the local machine is beneficial.
@@ -248,7 +240,6 @@ function Statistics.cov(d::Data)
     (sxx - n*μ*μ') ./ (n-1)
 end
 
-Base.collect(d::Data) = hcat([x for x in d]...)
 
 function Base.convert(::Type{Data{Td}}, d::Data{Ts}) where {Td,Ts}
     Td == Ts && return d
@@ -286,9 +277,31 @@ function maxsize(d::Data)
     return (d1, d2)
 end
 
-myread(f::String) = h5read(f, "data")::Array{Float64,2}
+myread(f::String, item::String) = h5read(f, item)::Array{Float64,2}
 mysize(f::String) = h5read(f, "size")::Array{Int64,1}
 
 function Base.size(d::Data, id::Int64)
     mysize(d.list[id])
+end
+
+function Base.iterate(x::Data, state=1; item="data"::String)
+    count = state
+
+    if(count > length(x.list))
+        return nothing
+    else
+        return (getindex(x, count, item), count+1, item)
+    end
+end
+
+
+function Base.collect(data::Data, item::String)
+    x = []
+    next = iterate(data, item=item)
+    while next !== nothing
+        (i, state, _) = next
+        push!(x, i)
+        next = iterate(data, state; item=item)
+    end
+    return hcat(x...)
 end
