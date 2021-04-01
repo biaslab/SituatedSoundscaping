@@ -18,8 +18,8 @@ precision(dist::Dcomplexnormalvector) = dist.γ
 
 #base functions
 length(dist::Dcomplexnormalvector) = length(dist.dists)
-function *(dist1::Dnormalvector, dist2::Dnormalvector)
+function *(dist1::Dcomplexnormalvector, dist2::Dcomplexnormalvector)
     γ = precision(dist1) + precision(dist2)
     μ = 1/γ*(mean(dist1)*precision(dist1) + mean(dist2)*precision(dist2))
-    return Dnormalvector(μ, γ)
+    return Dcomplexnormalvector(μ, γ)
 end
