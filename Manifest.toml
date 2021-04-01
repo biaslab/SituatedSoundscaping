@@ -401,6 +401,12 @@ git-tree-sha1 = "c253236b0ed414624b083e6b72bfe891fbd2c7af"
 uuid = "856f044c-d86e-5d09-b602-aeab76dc8ba7"
 version = "2021.1.1+1"
 
+[[MLJModelInterface]]
+deps = ["Random", "ScientificTypes", "StatisticalTraits"]
+git-tree-sha1 = "96dedd0ca1b75624ff180b265257f3c168047cda"
+uuid = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
+version = "0.4.1"
+
 [[MacroTools]]
 deps = ["Markdown", "Random"]
 git-tree-sha1 = "6a8a2a625ab0dea913aba95c11370589e0239ff0"
@@ -489,6 +495,12 @@ deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
 git-tree-sha1 = "f82a0e71f222199de8e9eb9a09977bd0767d52a0"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
 version = "0.11.0"
+
+[[ParallelKMeans]]
+deps = ["Distances", "MLJModelInterface", "Random", "StatsBase", "UnsafeArrays"]
+git-tree-sha1 = "ce5a76efdac69ed20dfc846ac8dac953bef3aa0b"
+uuid = "42b8e9d4-006b-409a-8472-7f34b3fb58af"
+version = "0.2.0"
 
 [[Parameters]]
 deps = ["OrderedCollections", "UnPack"]
@@ -603,6 +615,11 @@ version = "1.3.7"
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
+[[ScientificTypes]]
+git-tree-sha1 = "1d3f5f8bdf5dd0c9951eb9c595ee08a728aec331"
+uuid = "321657f4-b219-11e9-178b-2701a2544e81"
+version = "1.1.1"
+
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
@@ -640,6 +657,12 @@ deps = ["LinearAlgebra", "Random", "Statistics"]
 git-tree-sha1 = "9da72ed50e94dbff92036da395275ed114e04d49"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
 version = "1.0.1"
+
+[[StatisticalTraits]]
+deps = ["ScientificTypes"]
+git-tree-sha1 = "0daf443864a1fbb415d782c1dfd161d954140574"
+uuid = "64bff920-2084-43da-a3e6-9bb72801c0c9"
+version = "0.1.1"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
@@ -687,6 +710,11 @@ version = "1.0.2"
 
 [[Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+
+[[UnsafeArrays]]
+git-tree-sha1 = "be71ca7d62a9d61ecaa20e2d0e1920b791623626"
+uuid = "c4a57d5a-5b31-53a6-b365-19f8c011fbd6"
+version = "1.0.2"
 
 [[VersionParsing]]
 git-tree-sha1 = "80229be1f670524750d905f8fc8148e5a8c4537f"
