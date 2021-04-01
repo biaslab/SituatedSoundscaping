@@ -22,8 +22,9 @@ module SituatedSoundscaping
     include("data/data.jl")
     include("data/prepare_data.jl")
 
-    # include training
+    # include training procedures
     include("training/kmeans.jl")
+    include("training/em.jl")
 
 end # module
 
