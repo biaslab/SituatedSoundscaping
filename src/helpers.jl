@@ -156,6 +156,7 @@ function lognormal(x::Array{Float64,2}, μ::Array{Float64,2}, γ::Array{Float64,
     reduce(hcat, map((μ,γ) -> lognormal(x, μ, γ), eachcol(μ),eachcol(γ)))
 end
 
+eye(x::Int64) = collect(I(x))
 
 # function singlesided2twosided(x::Array{Complex{Float64}, 2})
 #     if size(x,2)%2 == 1

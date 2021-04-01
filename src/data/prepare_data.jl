@@ -52,12 +52,12 @@ function prepare_data(input_folder::String, output_folder::String; block_length:
             x_tmp .-= mean(x_tmp)
 
             # convert to spectrum
-            Xs = Array{Complex{Float64},2}(undef, Int(floor(length(x_tmp)/block_length)), Int(block_length/2+1))
-            ξs = Array{Float64,2}(undef, Int(floor(length(x_tmp)/block_length)), Int(block_length/2+1))
+            Xs = Array{Complex{Float64},2}(undef, Int(block_length/2+1), Int(floor(length(x_tmp)/block_length)))
+            ξs = Array{Float64,2}(undef, Int(block_length/2+1), Int(floor(length(x_tmp)/block_length)))
             for k = 1:Int(floor(length(x_tmp)/block_length))
                 run!(filterbank, x_tmp[1+(k-1)*block_length:k*block_length])
-                Xs[k,:] = get_frequency_coefficients(filterbank)
-                ξs[k,:] = get_power(filterbank)
+                Xs[:,k] = get_frequency_coefficients(filterbank)
+                ξs[:,k] = get_power(filterbank)
             end
             # y_tmp = stft(x_tmp, block_length, block_length-step_size; onesided=true, fs=fs, window=window)
             # y_tmp = log.(abs2.(y_tmp))
