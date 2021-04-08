@@ -59,6 +59,8 @@ function update_model(model_name, data, priors, nr_files; nr_iterations=10)
 
     if isfile(filename)
 
+        @info "Model already adjusted."
+
         # load model 
         f = h5open(filename, "r")
         p_full_alpha = HDF5.read(f["p_full_alpha"], Float64);
@@ -118,17 +120,15 @@ function update_model(model_name, data, priors, nr_files; nr_iterations=10)
         unsubscribe!(m_sub)
         unsubscribe!(w_sub)
 
-        @info "Model already adjusted."
-
         # write model 
         f = h5open(filename, "w")
         HDF5.write(f, "p_full_alpha", p_a.a);
-        HDF5.write(f, "q_full_alpha", getvalues(marg_switch)[end].alpha);
+        HDF5.write(f, "q_full_alpha", getvalues(marg_switch)[end].data.alpha);
         close(f)
 
         # create output
         p_full = Dirichlet(p_a.a)
-        q_full = getvalues(marg_switch)[end]
+        q_full = getvalues(marg_switch)[end].data
         
     end
 
