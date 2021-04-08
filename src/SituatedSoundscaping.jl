@@ -29,6 +29,7 @@ module SituatedSoundscaping
 
     # include model reduction procedures
     include("adjustment/update_recording.jl")
+    include("adjustment/bayesian_model_reduction.jl")
 
 end # module
 
