@@ -19,10 +19,11 @@ function prepare_data(input_folder::String, output_folder::String; block_length:
     # find files
     filenames = String[]
     rootpath = input_folder
-    pattern  = ".flac"
+    pattern1  = ".flac"
+    pattern2  = ".wav"
     for (root, dirs, files) in walkdir(rootpath)
         for file in files
-            if occursin(pattern, file) 
+            if occursin(pattern1, file) || occursin(pattern2, file)
                 # create string
                 filename = string(root) * "/" * string(file)
     
