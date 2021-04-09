@@ -3,7 +3,8 @@ using SituatedSoundscaping
 
 # settings 
 nr_mixtures = 10
-nr_files = 10
+nr_files_speech = 100
+nr_files_noise = 100
 nr_iterations_em = 10
 nr_iterations_gs = 10
 nr_iterations_adjust = 10
@@ -11,8 +12,10 @@ nr_iterations_adjust = 10
 # prepare data
 data_speech = prepare_data("data/train_speech_raw", "data/train_speech_processed")
 data_noise = prepare_data("data/train_noise_raw", "data/train_noise_processed")
-data_speech = data_speech[1:nr_files]
-data_noise = data_noise[1:nr_files]
+nr_files_speech = minimum([nr_files_speech, length(data_speech)])
+nr_files_noise = minimum([nr_files_noise, length(data_noise)])
+data_speech = data_speech[1:nr_files_speech]
+data_noise = data_noise[1:nr_files_noise]
 recording_speech = read_recording("data/recorded_speech_processed/recording_speech.h5", duration=3)
 recording_noise = read_recording("data/recorded_noise_processed/recording_noise.h5", duration=3)
 
