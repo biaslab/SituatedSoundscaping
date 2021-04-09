@@ -8,6 +8,7 @@ nr_files_noise = 100
 nr_iterations_em = 10
 nr_iterations_gs = 10
 nr_iterations_adjust = 10
+observation_noise_precision = 1e5
 
 # prepare data
 data_speech = prepare_data("data/train_speech_raw", "data/train_speech_processed")
@@ -28,14 +29,14 @@ means_speech, covs_speech, πk2_speech = train_em("models/EM/speech", data_speec
 means_noise, covs_noise, πk2_noise = train_em("models/EM/noise", data_noise, centers_noise, πk1_noise; nr_iterations=nr_iterations_em)
 
 # train GS models
-q_μ_speech, q_γ_speech, q_a_speech = train_gs("models/GS/speech", data_speech, means_speech, covs_speech, πk2_speech; nr_iterations=nr_iterations_gs);
-q_μ_noise, q_γ_noise, q_a_noise = train_gs("models/GS/noise", data_noise, means_noise, covs_noise, πk2_noise; nr_iterations=nr_iterations_gs);
+q_μ_speech, q_γ_speech, q_a_speech = train_gs("models/GS/speech", data_speech, means_speech, covs_speech, πk2_speech; nr_iterations=nr_iterations_gs, observation_noise=observation_noise_precision);
+q_μ_noise, q_γ_noise, q_a_noise = train_gs("models/GS/noise", data_noise, means_noise, covs_noise, πk2_noise; nr_iterations=nr_iterations_gs, observation_noise=observation_noise_precision);
 
 # adjust model on recording
 p_full_speech, q_full_speech = update_model("models/adjusted/speech", recording_speech, (q_a_speech, q_μ_speech, q_γ_speech), nr_files; nr_iterations=nr_iterations_adjust)
 p_full_noise, q_full_noise = update_model("models/adjusted/noise", recording_noise, (q_a_noise, q_μ_noise, q_γ_noise), nr_files; nr_iterations=nr_iterations_adjust)
 
-# perform Bayesian model reduction (2 ways)
+# perform Bayesian model reduction (2 approaches)
 p_red1_speech, q_red1_speech, Δp1_speech = model_reduction_all(p_full_speech, q_full_speech)
 p_red2_speech, q_red2_speech, Δp2_speech = model_reduction_steps(p_full_speech, q_full_speech)
 p_red1_noise, q_red1_noise, Δp1_noise = model_reduction_all(p_full_noise, q_full_noise)
