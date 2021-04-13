@@ -6,9 +6,9 @@ using HDF5
 export prepare_data, read_recording
 
 function read_recording(filename::String; duration::Real=3, fs::Int64=16000, block_length::Int64=64)
-    ξ = h5read(filename, "data_logpower")
+    X = h5read(filename, "data_complex")
     nr_observations = Int(floor(duration*fs/block_length))
-    return ξ[:, 1:nr_observations]
+    return X[:, 1:nr_observations]
 end
 
 """
