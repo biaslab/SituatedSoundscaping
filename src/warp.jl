@@ -115,6 +115,21 @@ function calculate_fir_weights(synthesis_matrix::Array{Float64,2}, G::Array{Floa
     return synthesis_matrix * G
 end
 
+function update_fir_weights!(filterbank::warped_filter_bank, G::Array{Float64,1})
+
+    # If n_bands gets updated, the situation can occur where there is a dimension
+    # mismatch between gain_db and synthesis_matrix, as both depend on n_bands
+    # but aren't updated simultaneously. If this case occurs the update is skipped
+    if length(G) == size(filterbank.synthesis_matrix, 2)
+        # The gain_db profile should be updated with a system calibration vector, but
+        # this can be set to 0 for practical purposes on a computer and is therefore
+        # omitted
+        fir_weights = vec(filterbank.synthesis_matrix * G)
+        filterbank.fir_weights = fir_weights
+    end
+
+end
+
 function calculate_taps(block_length::Int64, nr_fft::Int64) 
     return zeros(Float64, nr_fft, block_length)
 end
