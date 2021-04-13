@@ -42,3 +42,6 @@ p_red2_speech, q_red2_speech, Δp2_speech = model_reduction_steps(p_full_speech,
 p_red1_noise, q_red1_noise, Δp1_noise = model_reduction_all(p_full_noise, q_full_noise)
 p_red2_noise, q_red2_noise, Δp2_noise = model_reduction_steps(p_full_noise, q_full_noise)
 
+# simplify models
+q_μ_speech, q_γ_speech, q_a_speech = simplify_model(q_μ_speech, q_γ_speech, p_red1_speech)
+q_μ_noise, q_γ_noise, q_a_noise = simplify_model(q_μ_noise, q_γ_noise, p_red1_noise)
