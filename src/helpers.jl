@@ -82,7 +82,9 @@ end
 function normalize_sum(x::Array{Int64,1}) 
     x ./ sum(x)
 end
-
+function normalize_sum!(x::Array{Float64,2}) 
+    x ./= sum(x)
+end
 
 """
     softmax(x), softmax!(x)
@@ -98,6 +100,13 @@ function softmax(x::Array{Float64,1})
 
 end
 function softmax!(x::Array{Float64,1})
+
+    x .-= maximum(x)
+    x .= exp.(x)
+    normalize_sum!(x)
+
+end
+function softmax!(x::Array{Float64,2})
 
     x .-= maximum(x)
     x .= exp.(x)

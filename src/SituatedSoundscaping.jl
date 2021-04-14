@@ -32,5 +32,8 @@ module SituatedSoundscaping
     include("adjustment/bayesian_model_reduction.jl")
     include("adjustment/simplify.jl")
 
+    # include source separation
+    include("separation/source_separation.jl")
+
 end # module
 

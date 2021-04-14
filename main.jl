@@ -45,3 +45,22 @@ p_red2_noise, q_red2_noise, Δp2_noise = model_reduction_steps(p_full_noise, q_f
 # simplify models
 q_μ_speech, q_γ_speech, q_a_speech = simplify_model(q_μ_speech, q_γ_speech, p_red1_speech)
 q_μ_noise, q_γ_noise, q_a_noise = simplify_model(q_μ_noise, q_γ_noise, p_red1_noise)
+
+# perform source separation
+mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3, duration_test=10)
+speech_out, G = separate_sources(mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision)
+
+using WAV
+wavwrite(speech_out, "Speech_out.wav", Fs=16000)
+
+using PyPlot
+
+plt.figure()
+plt.plot(mixed_signal .+ 5)
+plt.plot(speech_out .- 5)
+plt.plot(speech_signal .- 15)
+plt.grid()
+plt.gcf()
+
+plt.figure()
+plt.plot()
