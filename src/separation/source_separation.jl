@@ -33,7 +33,7 @@ function separate_sources(x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_lengt
 
     end
 
-    return output
+    return output, G
 
 end
 

@@ -47,13 +47,15 @@ q_μ_speech, q_γ_speech, q_a_speech = simplify_model(q_μ_speech, q_γ_speech, 
 q_μ_noise, q_γ_noise, q_a_noise = simplify_model(q_μ_noise, q_γ_noise, p_red1_noise)
 
 # perform source separation
-mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3, duration_test=10)
+mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3, duration_test=1)
 speech_out, G = separate_sources(mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision)
 
 using WAV
-wavwrite(speech_out, "Speech_out.wav", Fs=16000)
+wavwrite(speech_out, "x_separated_speech.wav", Fs=16000)
+wavwrite(speech_signal, "x_true_speech.wav", Fs=16000)
+wavwrite(mixed_signal, "x_mixed.wav", Fs=16000)
 
-using PyPlot
+using PyPlot, DSP
 
 plt.figure()
 plt.plot(mixed_signal .+ 5)
@@ -63,4 +65,11 @@ plt.grid()
 plt.gcf()
 
 plt.figure()
-plt.plot()
+plt.imshow(log.(abs2.(G))', aspect="auto", origin="lower")
+plt.gcf()
+
+_, ax = plt.subplots(ncols=3, figsize=(15,10))
+ax[1].imshow(log.(abs2.(stft(mixed_signal, 64))), aspect="auto", origin="lower")
+ax[2].imshow(log.(abs2.(stft(speech_signal, 64))), aspect="auto", origin="lower")
+ax[3].imshow(log.(abs2.(stft(speech_out, 64))), aspect="auto", origin="lower")
+plt.gcf()
