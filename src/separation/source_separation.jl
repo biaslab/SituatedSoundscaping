@@ -14,7 +14,7 @@ function separate_sources(x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_lengt
     output = zeros(size(x))
 
     # loop through blocks
-    @showprogress for n in 1:nr_blocks
+    @showprogress for n in 1:1#nr_blocks
 
         # feed signal into filterbank
         run!(filterbank, x[1+(n-1)*block_length:n*block_length])
@@ -57,9 +57,14 @@ function loop_inference(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observatio
     end
 
     # determine posterior mixtures
-    prior = qs_a.a * qn_a.a'
+    prior = softmax(logmean(qs_a)) * softmax(logmean(qn_a))'
+    @assert sum(prior) ≈ 1
     posterior = -FE .+ log.(prior)
     softmax!(posterior)
+    println(prior)
+    println(log.(prior))
+    println(-FE) # bad
+    println(posterior)
 
     # weight gain by posteriors
     Gw = sum(G .* posterior)
