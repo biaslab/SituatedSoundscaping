@@ -2,7 +2,8 @@ using Revise
 using SituatedSoundscaping
 
 # settings 
-nr_mixtures = 10
+nr_mixtures_speech = 50
+nr_mixtures_noise = 50
 nr_files_speech = 100
 nr_files_noise = 100
 nr_iterations_em = 10
@@ -21,8 +22,8 @@ recording_speech = read_recording("data/recorded_speech_processed/recording_spee
 recording_noise = read_recording("data/recorded_noise_processed/recording_noise.h5", duration=3)
 
 # train Kmeans models
-centers_speech, πk1_speech = train_kmeans("models/Kmeans/speech", data_speech, nr_mixtures)
-centers_noise, πk1_noise = train_kmeans("models/Kmeans/noise", data_noise, nr_mixtures)
+centers_speech, πk1_speech = train_kmeans("models/Kmeans/speech", data_speech, nr_mixtures_speech)
+centers_noise, πk1_noise = train_kmeans("models/Kmeans/noise", data_noise, nr_mixtures_noise)
 
 # train EM models
 means_speech, covs_speech, πk2_speech = train_em("models/EM/speech", data_speech, centers_speech, πk1_speech; nr_iterations=nr_iterations_em)
