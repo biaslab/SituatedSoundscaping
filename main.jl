@@ -50,6 +50,14 @@ q_μ_noise, q_γ_noise, q_a_noise = simplify_model(q_μ_noise, q_γ_noise, p_red
 mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3, duration_test=1)
 speech_out, G = separate_sources(mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision)
 
+# calculate metrics
+SNRo = SNR(speech_signal, speech_out)
+pesqw = PESQ(16000, speech_signal, speech_out, "wb")
+pesqn = PESQ(16000, speech_signal, speech_out, "nb")
+stoi = STOI(speech_signal, speech_out, 16000, extended=false)
+
+
+
 using WAV
 wavwrite(speech_out, "x_separated_speech.wav", Fs=16000)
 wavwrite(speech_signal, "x_true_speech.wav", Fs=16000)
