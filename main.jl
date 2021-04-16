@@ -57,11 +57,17 @@ pesqw = PESQ(16000, speech_signal, speech_out, "wb")
 pesqn = PESQ(16000, speech_signal, speech_out, "nb")
 stoi = STOI(speech_signal, speech_out, 16000, extended=false)
 
+# find optimal values
+output, X, S, N, G_wiener = separate_sources_wiener(mixed_signal, speech_signal, noise_signal)
 
+using PyPlot
+plt.figure()
+plt.imshow(log.(abs2.(G))', origin="lower", cmap="jet", aspect="auto")
+plt.gcf()
 
-
-
-
+plt.figure()
+plt.imshow(log.(abs2.(G_wiener))', origin="lower", cmap="jet", aspect="auto")
+plt.gcf()
 
 
 
@@ -79,7 +85,7 @@ using WAV
 wavwrite(speech_out, "x_separated_speech.wav", Fs=16000)
 wavwrite(speech_signal, "x_true_speech.wav", Fs=16000)
 wavwrite(mixed_signal, "x_mixed.wav", Fs=16000)
-
+wavwrite(output, "x_wiener.wav", Fs=16000)
 using PyPlot, DSP
 
 plt.figure()

@@ -1,5 +1,3 @@
-using PyPlot
-
 export separate_sources
 
 function separate_sources(x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5)

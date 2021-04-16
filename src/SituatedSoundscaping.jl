@@ -34,6 +34,7 @@ module SituatedSoundscaping
 
     # include source separation
     include("separation/source_separation.jl")
+    include("separation/wiener.jl")
 
     # include metrics
     include("metrics/metrics.jl")
