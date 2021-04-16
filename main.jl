@@ -59,6 +59,22 @@ stoi = STOI(speech_signal, speech_out, 16000, extended=false)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using WAV
 wavwrite(speech_out, "x_separated_speech.wav", Fs=16000)
 wavwrite(speech_signal, "x_true_speech.wav", Fs=16000)
@@ -78,7 +94,29 @@ plt.imshow(log.(abs2.(G))', aspect="auto", origin="lower")
 plt.gcf()
 
 _, ax = plt.subplots(ncols=3, figsize=(15,10))
-ax[1].imshow(log.(abs2.(stft(mixed_signal, 64))), aspect="auto", origin="lower")
-ax[2].imshow(log.(abs2.(stft(speech_signal, 64))), aspect="auto", origin="lower")
-ax[3].imshow(log.(abs2.(stft(speech_out, 64))), aspect="auto", origin="lower")
+ax[1].imshow(log.(abs2.(stft(mixed_signal, 64))), aspect="auto", origin="lower", cmap="jet")
+ax[2].imshow(log.(abs2.(stft(speech_signal, 64))), aspect="auto", origin="lower", cmap="jet")
+ax[3].imshow(log.(abs2.(stft(speech_out, 64))), aspect="auto", origin="lower", cmap="jet")
 plt.gcf()
+
+_, ax = plt.subplots(ncols=3, figsize=(15,10))
+ax[1].imshow(log.(abs2.(stft(mixed_signal, 64))), aspect="auto", origin="lower", cmap="jet")
+ax[2].imshow(log.(abs2.(stft(noise_signal, 64))), aspect="auto", origin="lower", cmap="jet")
+ax[3].imshow(log.(abs2.(stft(noise_out, 64))), aspect="auto", origin="lower", cmap="jet")
+plt.gcf()
+
+_, ax = plt.subplots(ncols=3, figsize=(15,10))
+ax[1].imshow(centers_speech, origin="lower", aspect="auto", cmap="jet")
+ax[2].imshow(means_speech, origin="lower", aspect="auto", cmap="jet")
+ax[3].imshow(hcat(mean.(q_μ_speech)...), origin="lower", aspect="auto", cmap="jet")
+plt.gcf()
+
+_, ax = plt.subplots(ncols=3, figsize=(15,10))
+ax[1].imshow(centers_noise, origin="lower", aspect="auto", cmap="jet")
+ax[2].imshow(means_noise, origin="lower", aspect="auto", cmap="jet")
+ax[3].imshow(hcat(mean.(q_μ_noise)...), origin="lower", aspect="auto", cmap="jet")
+plt.gcf()
+
+
+
+

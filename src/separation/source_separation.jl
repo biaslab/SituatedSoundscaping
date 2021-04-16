@@ -1,3 +1,5 @@
+using PyPlot
+
 export separate_sources
 
 function separate_sources(x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5)
@@ -14,7 +16,7 @@ function separate_sources(x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_lengt
     output = zeros(size(x))
 
     # loop through blocks
-    @showprogress for n in 1:1#nr_blocks
+    @showprogress for n in 1:10#nr_blocks
 
         # feed signal into filterbank
         run!(filterbank, x[1+(n-1)*block_length:n*block_length])
@@ -61,11 +63,7 @@ function loop_inference(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observatio
     @assert sum(prior) ≈ 1
     posterior = -FE .+ log.(prior)
     softmax!(posterior)
-    println(prior)
-    println(log.(prior))
-    println(-FE) # bad
-    println(posterior)
-
+    
     # weight gain by posteriors
     Gw = sum(G .* posterior)
 
@@ -107,7 +105,7 @@ function inference(data, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision
 
         setmarginal!(ξn_μ[freq], GaussianMeanPrecision(qn_μ.μ[freq], qn_μ.γ[freq]))
         setmarginal!(ξn_γ[freq], GammaShapeRate(qn_γ.a[freq], qn_γ.b[freq]))
-        setmarginal!(ξn[freq], GaussianMeanPrecision(qn_μ.μ[freq], qn_γ.a[freq]/qs_γ.b[freq]))
+        setmarginal!(ξn[freq], GaussianMeanPrecision(qn_μ.μ[freq], qn_γ.a[freq]/qn_γ.b[freq]))
 
     end
 
@@ -168,7 +166,7 @@ end
         Y[freq] ~ ComplexNormal(Xs[freq] + Xn[freq], 1/observation_noise_precision, 0.0)
 
     end
-    
+
     # return random variables
     return ξs_μ, ξs_γ, ξs, Xs, ξn_μ, ξn_γ, ξn, Xn, Y
 
