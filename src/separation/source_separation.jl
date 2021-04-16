@@ -14,7 +14,7 @@ function separate_sources(x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_lengt
     output = zeros(size(x))
 
     # loop through blocks
-    @showprogress for n in 1:10#nr_blocks
+    @showprogress for n in 1:nr_blocks
 
         # feed signal into filterbank
         run!(filterbank, x[1+(n-1)*block_length:n*block_length])

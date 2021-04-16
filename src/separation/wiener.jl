@@ -19,7 +19,7 @@ function separate_sources_wiener(x, s, n; block_length::Int64=64, fs::Int64=1600
     output = zeros(size(x))
 
     # loop through blocks
-    @showprogress for k in 1:10#nr_blocks
+    @showprogress for k in 1:nr_blocks
 
         # feed signals into filterbanks
         run!(filterbank_x, x[1+(k-1)*block_length:k*block_length])
