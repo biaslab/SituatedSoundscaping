@@ -150,13 +150,13 @@ end
 
         # create speech model
         ξs_μ[freq] ~ GaussianMeanPrecision(ps_μ.μ[freq], ps_μ.γ[freq])
-        ξs_γ[freq] ~ Gamma(ps_γ.a[freq], ps_γ.b[freq])
+        ξs_γ[freq] ~ GammaShapeRate(ps_γ.a[freq], ps_γ.b[freq])
         ξs[freq] ~ GaussianMeanPrecision(ξs_μ[freq], ξs_γ[freq])
         Xs[freq] ~ GS(ξs[freq])
 
         # create noise model
         ξn_μ[freq] ~ GaussianMeanPrecision(pn_μ.μ[freq], pn_μ.γ[freq])
-        ξn_γ[freq] ~ Gamma(pn_γ.a[freq], pn_γ.b[freq])
+        ξn_γ[freq] ~ GammaShapeRate(pn_γ.a[freq], pn_γ.b[freq])
         ξn[freq] ~ GaussianMeanPrecision(ξn_μ[freq], ξn_γ[freq])
         Xn[freq] ~ GS(ξn[freq])
 

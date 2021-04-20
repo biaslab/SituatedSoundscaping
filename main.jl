@@ -2,18 +2,20 @@ using Revise
 using SituatedSoundscaping
 
 # settings 
-nr_mixtures_speech = 50
-nr_mixtures_noise = 50
-nr_files_speech = 100
-nr_files_noise = 100
-nr_iterations_em = 10
+nr_mixtures_speech = 100
+nr_mixtures_noise = 5
+nr_files_speech = 1000
+nr_files_noise = 1000
 nr_iterations_gs = 10
+nr_iterations_em = 10
 nr_iterations_adjust = 10
-observation_noise_precision = 1e5
+observation_noise_precision = 1e3
 
 # prepare data
 data_speech = prepare_data("data/train_speech_raw", "data/train_speech_processed")
 data_noise = prepare_data("data/train_noise_raw", "data/train_noise_processed")
+prepare_data("data/recorded_speech_raw", "data/recorded_speech_processed")
+prepare_data("data/recorded_noise_raw", "data/recorded_noise_processed")
 nr_files_speech = minimum([nr_files_speech, length(data_speech)])
 nr_files_noise = minimum([nr_files_noise, length(data_noise)])
 data_speech = data_speech[1:nr_files_speech]
@@ -60,13 +62,28 @@ stoi = STOI(speech_signal, speech_out, 16000, extended=false)
 # find optimal values
 output, X, S, N, G_wiener = separate_sources_wiener(mixed_signal, speech_signal, noise_signal)
 
+
 using PyPlot
 plt.figure()
+plt.imshow(hcat(mean.(q_μ_noise)...), aspect="auto", origin="lower", cmap="jet")
+plt.colorbar()
+plt.gcf()
+
+tmp = hcat(mean.(q_μ_noise)...) -  1 ./ hcat(mean.(q_γ_noise)...)/2
+plt.figure()
+plt.imshow(tmp, aspect="auto", origin="lower", cmap="jet")
+plt.colorbar()
+plt.gcf()
+
+
+plt.figure()
 plt.imshow(log.(abs2.(G))', origin="lower", cmap="jet", aspect="auto")
+plt.colorbar()
 plt.gcf()
 
 plt.figure()
 plt.imshow(log.(abs2.(G_wiener))', origin="lower", cmap="jet", aspect="auto")
+plt.colorbar()
 plt.gcf()
 
 
@@ -74,7 +91,16 @@ plt.gcf()
 
 
 
+_, ax = plt.subplots(ncols=3, figsize=(15,10))
+ax[1].imshow(log.(abs2.(X')), origin="lower", aspect="auto", cmap="jet")
+ax[2].imshow(log.(abs2.(S')), origin="lower", aspect="auto", cmap="jet")
+ax[3].imshow(log.(abs2.(N')), origin="lower", aspect="auto", cmap="jet")
+plt.gcf()
 
+plt.figure()
+plt.plot(speech_out)
+plt.grid()
+plt.gcf()
 
 
 
@@ -122,6 +148,7 @@ ax[1].imshow(centers_noise, origin="lower", aspect="auto", cmap="jet")
 ax[2].imshow(means_noise, origin="lower", aspect="auto", cmap="jet")
 ax[3].imshow(hcat(mean.(q_μ_noise)...), origin="lower", aspect="auto", cmap="jet")
 plt.gcf()
+
 
 
 
