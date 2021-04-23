@@ -1,6 +1,6 @@
 using SpecialFunctions: loggamma, gamma
 
-export model_reduction_all, model_reduction_steps
+export model_reduction_all, model_reduction_steps, model_reduction_info
 
 # helper functions for the model reduction
 mvbeta(x::Array{Float64,1}) = prod(gamma.(x))/gamma(sum(x))
@@ -92,5 +92,47 @@ function model_reduction_steps(p_full::Dirichlet, q_full::Dirichlet)
 
     # return values
     return p_reduced, q_reduced, Δp
+
+end
+
+
+function model_reduction_info(p_full::Dirichlet, q_full::Dirichlet)
+
+    # allocate new prior
+    p_reduced = deepcopy(p_full)
+
+    # allocate array for approximate evidence differences
+    Δp = ones(length(p_full))
+    
+    # keep on going whilst there is an improvement to be made
+    for k = 1:length(p_full)
+
+        # reset values
+        Δp .= -Inf
+        
+        # calculate approximate evidence differences when removing individual components
+        for k = 1:length(Δp)
+
+            # create reduced prior (skip if value is already reduced)
+            p_reduced_tmp = deepcopy(p_reduced)
+            if p_reduced_tmp.alpha[k] == 0.001
+                continue
+            else
+                p_reduced_tmp.alpha[k] = 0.001
+            end
+
+            # calculate reduced approximate posterior
+            q_reduced = Dirichlet(q_full.alpha + p_reduced_tmp.alpha - p_full.alpha)
+
+            # calculate approximate difference in model evidence
+            Δp[k] = logmvbeta(p_full) - logmvbeta(p_reduced_tmp) + logmvbeta(q_reduced) - logmvbeta(q_full)
+
+        end
+
+        p_reduced.alpha[Δp .== maximum(Δp)] .= 0.001
+
+        @info "iteration "*string(k)*": Δp = "*string(maximum(Δp))
+
+    end
 
 end
