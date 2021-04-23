@@ -3,25 +3,27 @@ export train_gs
 function update_z!(q_μ::Array{Dnormalvector,1}, q_γ::Array{Dgammavector,1}, q_ξ::Dnormalvector, U::Array{Float64,1}, tmp::Array{Float64,1})
     U .= 0
     for k in 1:length(q_μ)
+        # average energies of normalmeanprecision
         @. tmp = q_μ[k].μ
         @. tmp -= q_ξ.μ
         tmp .^= 2
-        @. tmp += q_ξ.γ
-        @. tmp += q_μ[k].γ
-        @. tmp *= -0.5*q_γ[k].a/q_γ[k].b
-        @. tmp += 0.5*(digamma(q_γ[k].a) - digamma(q_γ[k].b))
-        tmp .-= 0.5*log(2*pi)
+        @. tmp += 1/q_ξ.γ
+        @. tmp += 1/q_μ[k].γ
+        @. tmp *= q_γ[k].a/q_γ[k].b
+        @. tmp -= (digamma(q_γ[k].a) - log(q_γ[k].b))
+        @. tmp += log(2*pi)
+        @. tmp *= 0.5
 
-        U[k] = sum(tmp)
+        U[k] = -sum(tmp)
         #U[k] = -sum(0.5*log(2*pi) .- 0.5*logmean(q_γ[k]) .+ 0.5*mean(q_γ[k]).*(var(q_μ[k]) + var(q_ξ) + (mean(q_μ[k]) - mean(q_ξ)).^2))
     end
     softmax!(U)
 end
 
 # update alpha
-function update_qa!(data::Data, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Array{Dnormalvector,1}, q_γ::Array{Dgammavector,1}, nr_freqs::Int64, it::Int64, observation_noise::Float64)
+function update_qa(data::Data, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Array{Dnormalvector,1}, q_γ::Array{Dgammavector,1}, nr_freqs::Int64, it::Int64, observation_noise_precision::Float64)
     v_z_down = Dcategorical(exp.(logmean(q_a)) ./ sum(exp.(logmean(q_a))))
-    q_a_p = v_a_down.a    # clear memory and only keep prior
+    q_a_p = deepcopy(v_a_down.a)    # clear memory and only keep prior
     m_tmp = zeros(nr_freqs)
     freq1 = ones(nr_freqs)
     U = zeros(length(q_μ))
@@ -32,7 +34,7 @@ function update_qa!(data::Data, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Arr
     dsize = [1, 1]
 
     # loop through data files
-    @showprogress "iteration "*string(it)*"a" for n in 1:length(data)
+    @showprogress "iteration "*string(it)*"a - " for n in 1:length(data)
 
         # load data
         f = h5open(data.list[n], "r")
@@ -44,11 +46,11 @@ function update_qa!(data::Data, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Arr
 
             # upward message from gaussianscale node toward gaussian
             @inbounds for ki in 1:nr_freqs
-                m_tmp[ki] = log(observation_noise + abs2(d[ki,k]))
+                m_tmp[ki] = log(1/observation_noise_precision + abs2(d[ki,k]))
             end
             q_ξ = Dnormalvector(m_tmp, freq1) # approx
 
-            # update q_z
+            # update U
             update_z!(q_μ, q_γ, q_ξ, U, tmp)
             # q_z = v_z_up * v_z_down
 
@@ -63,6 +65,9 @@ function update_qa!(data::Data, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Arr
         close(f)
 
     end
+
+    # return q_a
+    return  Ddirichlet(q_a_p)
 end
 
 function update_μγ(data::Data, v_z_down::Dcategorical, v_μ_down::Array{Dnormalvector}, v_γ_down::Array{Dgammavector}, nr_freqs::Int64, it::Int64)
@@ -116,7 +121,7 @@ function update_μγ(data::Data, v_z_down::Dcategorical, v_μ_down::Array{Dnorma
 
 end
 
-function GaussianScaleVMP(data::Data, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise=1e5::Float64)
+function GaussianScaleVMP(data::Data, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
     (nr_freqs, nr_mixtures) = size(means)
 
     precs = 1 ./ covs
@@ -130,12 +135,13 @@ function GaussianScaleVMP(data::Data, means::Array{Float64,2}, covs::Array{Float
     end
     q_μ = deepcopy(v_μ_down)
     q_γ = deepcopy(v_γ_down)
-    q_a = Ddirichlet(πk .* size(data)[2])
+    # q_a = Ddirichlet(πk .* size(data)[2])
+    q_a = Ddirichlet(ones(nr_mixtures))
     v_a_down = deepcopy(q_a)
     v_z_down = Dcategorical(exp.(logmean(q_a)) ./ sum(exp.(logmean(q_a))))
 
     for it in 1:nr_iterations
-        update_qa!(data, q_a, v_a_down, q_μ, q_γ, nr_freqs, it, observation_noise)
+        q_a = update_qa(data, q_a, v_a_down, q_μ, q_γ, nr_freqs, it, observation_noise_precision)
         v_z_down = Dcategorical(exp.(logmean(q_a)) ./ sum(exp.(logmean(q_a))))
         q_μ, q_γ = update_μγ(data, v_z_down, v_μ_down, v_γ_down, nr_freqs, it)
     end
@@ -146,7 +152,7 @@ end
 
 
 
-function train_gs(model_name::String, data::Data, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise=1e5::Float64)
+function train_gs(model_name::String, data::Data, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
 
     # fetch dimensions 
     (nr_frequencies, nr_mixtures) = size(means)
@@ -177,7 +183,7 @@ function train_gs(model_name::String, data::Data, means::Array{Float64,2}, covs:
     else
 
         # initialize clusters 
-        q_μ, q_γ, q_a =  GaussianScaleVMP(data, means, covs, πk; nr_iterations=nr_iterations, observation_noise=observation_noise)
+        q_μ, q_γ, q_a =  GaussianScaleVMP(data, means, covs, πk; nr_iterations=nr_iterations, observation_noise_precision=observation_noise_precision)
 
         # save model
         f = h5open(filename, "w")
