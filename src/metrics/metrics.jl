@@ -27,7 +27,7 @@ function evaluate_metrics(filename, speech_sep, speech_noisy, speech_true; block
     # also 'warp' the original signal
     filterbank_true = warped_filter_bank(block_duration_s=block_length/fs, nr_bands=Int(block_length/2)+1)
     filterbank_noisy = warped_filter_bank(block_duration_s=block_length/fs, nr_bands=Int(block_length/2)+1)
-    nr_blocks = Int(length(speech_signal)/block_length)
+    nr_blocks = Int(length(speech_true)/block_length)
     speech_true_warped = zeros(size(speech_true))
     speech_noisy_warped = zeros(size(speech_noisy))
     for k in 1:nr_blocks
@@ -71,5 +71,5 @@ function evaluate_metrics(filename, speech_sep, speech_noisy, speech_true; block
         write(f, "PESQ (nb)= $pesqn \n")
         write(f, "STOI= $stoi \n")
     end
-    
+
 end
