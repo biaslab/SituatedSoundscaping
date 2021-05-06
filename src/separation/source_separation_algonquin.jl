@@ -1,6 +1,8 @@
+using PyPlot, WAV
+
 export separate_sources_algonquin
 
-function separate_sources_algonquin(x, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5)
+function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0)
 
     # calculate number of blocks to process
     nr_blocks = Int(length(x)/block_length)
@@ -9,7 +11,7 @@ function separate_sources_algonquin(x, means_speech, covs_speech, w_speech, mean
     filterbank = warped_filter_bank(block_duration_s=block_length/16000, nr_bands=Int(block_length/2)+1)
 
     # allocate some space
-    X = Array{Complex{Float64},1}(undef, Int(block_length/2)+1)
+    X = Array{Float64,1}(undef, Int(block_length/2)+1)
     G = Array{Float64,2}(undef, nr_blocks, Int(block_length/2)+1)
     output = zeros(size(x))
 
@@ -20,7 +22,7 @@ function separate_sources_algonquin(x, means_speech, covs_speech, w_speech, mean
         run!(filterbank, x[1+(n-1)*block_length:n*block_length])
 
         # extract log-power  coefficients
-        X = log.(abs2.(squeeze(get_frequency_coefficients(filterbank))))
+        X .= log.(abs2.(squeeze(get_frequency_coefficients(filterbank))))
 
         # calculate weighted gain
         G[n,:] = loop_inference_algonquin(X, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise, observation_noise_precision, block_length)
@@ -33,7 +35,15 @@ function separate_sources_algonquin(x, means_speech, covs_speech, w_speech, mean
 
     end
 
-    return output, G
+    # save files
+    nr_frequencies = size(means_speech,1)
+    nr_mixtures_speech = size(means_speech,2)
+    nr_mixtures_noise = size(means_noise,2)
+    folder_extended = "_freq="*string(nr_frequencies)*"_mixs="*string(nr_mixtures_speech)*"_mixn="*string(nr_mixtures_noise)*"_power="*string(power_dB)
+    plot_algonquin(folder, folder_extended, G, output, block_length, fs)
+
+    # return output signal
+    return output
 
 end
 
@@ -159,5 +169,68 @@ function score_algonquin(y::Array{Float64,1}, gi::Array{Float64,1}, gi_derivativ
             0.5*sum(Φ ./ Σ) -
             0.5*tmp1 - 
             0.5*tmp2
+
+end
+
+# plot stuff
+function plot_algonquin(folder, folder_extended, G, output, block_length, fs)
+    
+    # plot text
+    filterbank = warped_filter_bank(block_duration_s=block_length/fs, nr_bands=Int(block_length/2)+1)
+    nr_blocks = Int(length(output)/block_length)
+    nr_freqs = block_length ÷ 2 + 1
+    X = zeros(nr_freqs,nr_blocks)
+    for k in 1:nr_blocks
+
+        # feed signals into filterbanks
+        run!(filterbank, output[1+(k-1)*block_length:k*block_length])
+
+        # read from filter
+        X[:,k] = log.(abs2.(squeeze(get_frequency_coefficients(filterbank))))
+
+    end
+
+    # plot gain
+    plt.figure()
+    plt.imshow(X, aspect="auto", origin="lower", cmap="jet")
+    plt.xlabel("frame")
+    plt.ylabel("frequency bin")
+    plt.colorbar()
+    plt.gcf()
+    plt.savefig(folder*"/warped_spectrum"*folder_extended*".eps") 
+    plt.savefig(folder*"/warped_spectrum"*folder_extended*".png") 
+
+    # plot gain
+    plt.figure()
+    plt.imshow(G', aspect="auto", origin="lower", cmap="jet")
+    plt.xlabel("frame")
+    plt.ylabel("frequency bin")
+    plt.colorbar()
+    plt.gcf()
+    plt.savefig(folder*"/gain"*folder_extended*".eps") 
+    plt.savefig(folder*"/gain"*folder_extended*".png") 
+
+    # plot logpower gain
+    plt.figure()
+    plt.imshow(log.(abs2.(G))', aspect="auto", origin="lower", cmap="jet")
+    plt.xlabel("frame")
+    plt.ylabel("frequency bin")
+    plt.colorbar()
+    plt.gcf()
+    plt.savefig(folder*"/logpowergain"*folder_extended*".eps") 
+    plt.savefig(folder*"/logpowergain"*folder_extended*".png") 
+
+    # plot signal
+    plt.figure()
+    plt.plot(collect(1:length(output))/fs, output)
+    plt.grid()
+    plt.xlabel("time [sec]")
+    plt.gcf()
+    plt.savefig(folder*"/output_signal"*folder_extended*".eps") 
+    plt.savefig(folder*"/output_signal"*folder_extended*".png") 
+
+    # save signal
+    wavwrite(normalize_range(output), folder*"/output_signal"*folder_extended*".wav", Fs=fs)
+
 
 end
