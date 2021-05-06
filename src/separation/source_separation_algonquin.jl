@@ -2,7 +2,7 @@ using PyPlot, WAV
 
 export separate_sources_algonquin
 
-function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0)
+function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0, save_results::Bool=true)
 
     # calculate number of blocks to process
     nr_blocks = Int(length(x)/block_length)
@@ -36,11 +36,13 @@ function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_spee
     end
 
     # save files
-    nr_frequencies = size(means_speech,1)
-    nr_mixtures_speech = size(means_speech,2)
-    nr_mixtures_noise = size(means_noise,2)
-    folder_extended = "_freq="*string(nr_frequencies)*"_mixs="*string(nr_mixtures_speech)*"_mixn="*string(nr_mixtures_noise)*"_power="*string(power_dB)
-    plot_algonquin(folder, folder_extended, G, output, block_length, fs)
+    if save_results
+        nr_frequencies = size(means_speech,1)
+        nr_mixtures_speech = size(means_speech,2)
+        nr_mixtures_noise = size(means_noise,2)
+        folder_extended = "_freq="*string(nr_frequencies)*"_mixs="*string(nr_mixtures_speech)*"_mixn="*string(nr_mixtures_noise)*"_power="*string(power_dB)
+        plot_algonquin(folder, folder_extended, G, output, block_length, fs)
+    end
 
     # return output signal
     return output
