@@ -42,7 +42,7 @@ end
 """
 This function prepares the data for model training.
 """
-function prepare_data(input_folder::String, output_folder::String; block_length::Int64=64, step_size::Int64=32, fs::Int64=16000, window::Function=hanning)
+function prepare_data(input_folder::String, output_folder::String; block_length::Int64=64, step_size::Int64=32, fs::Int64=16000, window::Function=hanning, power_dB::Real=0)
 
     # find files
     filenames = String[]
@@ -86,6 +86,7 @@ function prepare_data(input_folder::String, output_folder::String; block_length:
             x_tmp .+= 1e-5*randn(length(x_tmp))
             x_tmp .-= mean(x_tmp)
             x_tmp ./= std(x_tmp)
+            x_tmp .*= 10^(power_dB/10/2)
 
             # convert to spectrum
             Xs = Array{Complex{Float64},2}(undef, Int(block_length/2+1), Int(floor(length(x_tmp)/block_length)))
