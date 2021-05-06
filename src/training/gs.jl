@@ -135,8 +135,8 @@ function GaussianScaleVMP(data::Data, means::Array{Float64,2}, covs::Array{Float
     end
     q_μ = deepcopy(v_μ_down)
     q_γ = deepcopy(v_γ_down)
-    # q_a = Ddirichlet(πk .* size(data)[2])
-    q_a = Ddirichlet(ones(nr_mixtures))
+    # q_a = Ddirichlet(πk .* size(data)[2]) # informative prior on cluster assignment
+    q_a = Ddirichlet(ones(nr_mixtures)) # uninformative prior on cluster assignment
     v_a_down = deepcopy(q_a)
     v_z_down = Dcategorical(exp.(logmean(q_a)) ./ sum(exp.(logmean(q_a))))
 
