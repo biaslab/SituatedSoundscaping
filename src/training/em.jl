@@ -148,14 +148,14 @@ function emstep!(data::Array{Float64,2}, means::Array{Float64,2}, covs::Array{Fl
     println("average proportional log-likelihood: ", total_log_likelihood_propto)
 end
 
-function train_em(model_name::String, data::Data, centers::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64)
+function train_em(model_name::String, data::Data, centers::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, power_dB=0::Real)
 
     # fetch dimensions 
     (nr_frequencies, nr_mixtures) = size(centers)
     nr_files = length(data)
 
     # filename
-    filename = model_name*"_"*string(nr_frequencies)*"_"*string(nr_mixtures)*"_"*string(nr_files)*".h5"
+    filename = model_name*"_freq="*string(nr_frequencies)*"_mix="*string(nr_mixtures)*"_file="*string(nr_files)*"_power="*string(power_dB)*".h5"
 
     # check if model exists
     if isfile(filename)
@@ -197,13 +197,13 @@ function train_em(model_name::String, data::Data, centers::Array{Float64,2}, πk
 end
 
 
-function train_em(model_name::String, data::Array{Float64,2}, centers::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64)
+function train_em(model_name::String, data::Array{Float64,2}, centers::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, power_dB=0::Real)
 
     # fetch dimensions 
     (nr_frequencies, nr_mixtures) = size(centers)
 
     # filename
-    filename = model_name*"_"*string(nr_frequencies)*"_"*string(nr_mixtures)*"_1.h5"
+    filename = model_name*"_freq="*string(nr_frequencies)*"_mix="*string(nr_mixtures)*"_file=1_power="*string(power_dB)*".h5"
 
     # check if model exists
     if isfile(filename)

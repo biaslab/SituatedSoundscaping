@@ -2,14 +2,14 @@ using ParallelKMeans
 
 export train_kmeans
 
-function train_kmeans(model_name::String, data::Data, nr_mixtures::Int64)
+function train_kmeans(model_name::String, data::Data, nr_mixtures::Int64; power_dB=0::Real)
 
     # fetch dimensions 
     nr_frequencies = size(getindex(data, 1, "data_logpower"),1)
     nr_files = length(data)
 
     # filename
-    filename = model_name*"_"*string(nr_frequencies)*"_"*string(nr_mixtures)*"_"*string(nr_files)*".h5"
+    filename = model_name*"_freq="*string(nr_frequencies)*"_mix="*string(nr_mixtures)*"_file="*string(nr_files)*"_power="*string(power_dB)*".h5"
 
     # check if model exists
     if isfile(filename)
@@ -44,13 +44,13 @@ function train_kmeans(model_name::String, data::Data, nr_mixtures::Int64)
 end
 
 
-function train_kmeans(model_name::String, data::Array{Float64,2}, nr_mixtures::Int64)
+function train_kmeans(model_name::String, data::Array{Float64,2}, nr_mixtures::Int64; power_dB=0::Real)
 
     # fetch dimensions 
     nr_frequencies = size(data,1)
 
     # filename
-    filename = model_name*"_"*string(nr_frequencies)*"_"*string(nr_mixtures)*"_1.h5"
+    filename = model_name*"_freq="*string(nr_frequencies)*"_mix="*string(nr_mixtures)*"_file=1_power="*string(power_dB)*".h5"
 
     # check if model exists
     if isfile(filename)
