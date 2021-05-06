@@ -1,6 +1,7 @@
 .vscode
 archive
 data/
+exports/
 !src/data/
 docs
 models
