@@ -3,7 +3,7 @@ using SituatedSoundscaping
 
 # settings 
 nr_mixtures_speech = 100
-nr_mixtures_noise = 5
+nr_mixtures_noise = 20
 nr_files_speech = 1000
 nr_files_noise = 1000
 nr_iterations_gs = 10
@@ -49,9 +49,14 @@ p_red2_noise, q_red2_noise, Δp2_noise = model_reduction_steps(p_full_noise, q_f
 q_μ_speech, q_γ_speech, q_a_speech = simplify_model(q_μ_speech, q_γ_speech, p_red1_speech)
 q_μ_noise, q_γ_noise, q_a_noise = simplify_model(q_μ_noise, q_γ_noise, p_red1_noise)
 
+# adjust model on recording (with transition matrix)
+# q_T_speech = update_model_transition("models/adjusted/speech", recording_speech, (q_a_speech, q_μ_speech, q_γ_speech), nr_files_speech; nr_iterations=nr_iterations_adjust, observation_noise=observation_noise_precision)
+# q_T_noise = update_model_transition("models/adjusted/noise", recording_noise, (q_a_noise, q_μ_noise, q_γ_noise), nr_files_noise; nr_iterations=nr_iterations_adjust, observation_noise=observation_noise_precision)
+
 # perform source separation
-mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3, duration_test=1)
+mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3.0, duration_test=5.0)
 speech_out, G = separate_sources(mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision)
+# speech_out, G = separate_sources_transition(mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise, q_T_speech, q_T_noise; observation_noise_precision=observation_noise_precision)
 
 # calculate metrics
 SNRo = SNR(speech_signal, speech_out)
@@ -79,6 +84,7 @@ plt.gcf()
 plt.figure()
 plt.imshow(log.(abs2.(G))', origin="lower", cmap="jet", aspect="auto")
 plt.colorbar()
+plt.clim(-35.0)
 plt.gcf()
 
 plt.figure()
@@ -101,10 +107,6 @@ plt.figure()
 plt.plot(speech_out)
 plt.grid()
 plt.gcf()
-
-
-
-
 
 
 using WAV
