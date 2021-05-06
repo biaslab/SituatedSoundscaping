@@ -66,6 +66,19 @@ function numtodB10(a::Real)
 
 end
 
+"""
+This function normalizes a signal such that it is fully bounded between (-a, a).
+"""
+function normalize_range!(x::Array{Float64,1}; bound=1::Real)
+    x ./= maximum(abs.(x))
+    x .*= bound
+end
+function normalize_range(x::Array{Float64,1}; bound=1::Real)
+    y = deepcopy(x)
+    y ./= maximum(abs.(y))
+    y .*= bound
+    return y
+end
 
 """
     normalize_sum(x), normalize_sum!(x)
