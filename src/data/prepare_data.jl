@@ -5,7 +5,7 @@ using HDF5
 
 export prepare_data, read_recording, create_mixture_signal
 
-function create_mixture_signal(filename_speech::String, filename_noise::String; duration_adapt::Float64=3.0, duration_test::Float64=10.0, fs::Int64=16000, block_length::Int64=64)
+function create_mixture_signal(filename_speech::String, filename_noise::String; duration_adapt::Float64=3.0, duration_test::Float64=10.0, fs::Int64=16000, block_length::Int64=64, power_noise_dB::Real=0)
 
     # load and preprocess speech signal
     x_speech, fs_speech = load(filename_speech)
@@ -23,6 +23,7 @@ function create_mixture_signal(filename_speech::String, filename_noise::String; 
     x_noise .+= 1e-5*randn(length(x_noise))
     x_noise .-= mean(x_noise)
     x_noise ./= std(x_noise)
+    x_noise .*= 10^(power_noise_dB/10/2)
     x_noise = x_noise[Int(round(fs*duration_adapt+1)):Int(round(fs*(duration_adapt+duration_test)))]
 
     # create mixture signal
