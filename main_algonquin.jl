@@ -104,11 +104,11 @@ plt.gcf()
 
 
 using WAV
-wavwrite(speech_out, "x_separated_speech_algonquin.wav", Fs=16000)
-wavwrite(speech_signal, "x_true_speech.wav", Fs=16000)
-wavwrite(mixed_signal, "x_mixed.wav", Fs=16000)
-wavwrite(output, "x_wiener.wav", Fs=16000)
-wavwrite(0.3*mixed_signal + 0.7*speech_out, "x_weighted.wav", Fs=16000)
+wavwrite(normalize_range(speech_out), "x_separated_speech_algonquin.wav", Fs=16000)
+wavwrite(normalize_range(speech_signal), "x_true_speech.wav", Fs=16000)
+wavwrite(normalize_range(mixed_signal), "x_mixed.wav", Fs=16000)
+wavwrite(normalize_range(output), "x_wiener.wav", Fs=16000)
+wavwrite(normalize_range(0.3*mixed_signal + 0.7*speech_out), "x_weighted.wav", Fs=16000)
 
 _, ax = plt.subplots(ncols=2)
 ax[1].imshow(means_speech', aspect="auto", origin="lower", cmap="jet")

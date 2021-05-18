@@ -110,10 +110,10 @@ plt.gcf()
 
 
 using WAV
-wavwrite(speech_out, "x_separated_speech.wav", Fs=16000)
-wavwrite(speech_signal, "x_true_speech.wav", Fs=16000)
-wavwrite(mixed_signal, "x_mixed.wav", Fs=16000)
-wavwrite(output, "x_wiener.wav", Fs=16000)
+wavwrite(normalize_range(speech_out), "x_separated_speech.wav", Fs=16000)
+wavwrite(normalize_range(speech_signal), "x_true_speech.wav", Fs=16000)
+wavwrite(normalize_range(mixed_signal), "x_mixed.wav", Fs=16000)
+wavwrite(normalize_range(output), "x_wiener.wav", Fs=16000)
 using PyPlot, DSP
 
 plt.figure()
