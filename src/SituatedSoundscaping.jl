@@ -35,6 +35,7 @@ module SituatedSoundscaping
     # include source separation
     include("separation/source_separation.jl")
     include("separation/source_separation_gs.jl")
+    include("separation/source_separation_algonquin.jl")
     include("separation/source_separation_algonquin_paper.jl")
     include("separation/wiener.jl")
 
