@@ -23,7 +23,7 @@ function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; 
         X = squeeze(get_frequency_coefficients(filterbank))
 
         # calculate weighted gain
-        G[n,:] = loop_inference(X, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision)
+        G[n,:] = loop_inference_gs(X, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision)
 
         # update filter fir_weights
         update_fir_weights!(filterbank, G[n,:])
@@ -48,7 +48,7 @@ function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; 
 end
 
 # perform inference for all possible combinations
-function loop_inference(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision)
+function loop_inference_gs(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision)
 
     # fetch items 
     nr_mixtures_speech = length(qs_μ)
@@ -62,7 +62,7 @@ function loop_inference(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observatio
     for (ids, idn) in Iterators.product(1:nr_mixtures_speech, 1:nr_mixtures_noise)
 
         # do inference
-        FE[ids, idn], G[ids, idn] = inference(data, qs_μ[ids], qs_γ[ids], qn_μ[idn], qn_γ[idn], observation_noise_precision)
+        FE[ids, idn], G[ids, idn] = inference_gs(data, qs_μ[ids], qs_γ[ids], qn_μ[idn], qn_γ[idn], observation_noise_precision)
 
     end
 
@@ -82,13 +82,13 @@ end
 
 
 # do inference in model
-function inference(data, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision; nr_iterations=10)
+function inference_gs(data, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision; nr_iterations=10)
 
     # find number of frequencies
     nr_freqs = length(qs_μ)
 
     # create model
-    model, (ξs_μ, ξs_γ, ξs, Xs, ξn_μ, ξn_γ, ξn, Xn, Y) = source_separation_model(nr_freqs, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision)
+    model, (ξs_μ, ξs_γ, ξs, Xs, ξn_μ, ξn_γ, ξn, Xn, Y) = source_separation_model_gs(nr_freqs, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision)
 
     # allocate space for marginals
     marg_Xs = keep(Vector{Marginal})
@@ -142,7 +142,7 @@ function inference(data, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision
 end
 
 # create model
-@model [ default_factorisation = MeanField() ] function source_separation_model(nr_freqs, ps_μ, ps_γ, pn_μ, pn_γ, observation_noise_precision)
+@model [ default_factorisation = MeanField() ] function source_separation_model_gs(nr_freqs, ps_μ, ps_γ, pn_μ, pn_γ, observation_noise_precision)
     
     # allocate variables
     ξs_μ = randomvar(nr_freqs)
