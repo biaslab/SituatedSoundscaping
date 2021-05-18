@@ -23,7 +23,7 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
     # prepare data sets
     prepare_data("data/recorded_noise_raw", "data/recorded_noise_processed32/"*string(ndB); block_length=32, power_dB=ndB)
     recording_noise = read_recording("data/recorded_noise_processed32/"*string(ndB)*"/0000000001.h5", duration=3)
-    mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3.0, duration_test=5.0, power_noise_dB=ndB)
+    mixed_signal, speech_signal, noise_signal = create_mixture_signal("data/recorded_speech_raw/recording_speech.flac", "data/recorded_noise_raw/recording_noise.wav", duration_adapt=3.0, duration_test=10.0, power_noise_dB=ndB)
 
     # train model speech
     centers_speech, πk1_speech = train_kmeans("models/Kmeans/speech", data_speech, nmix_speech)
@@ -34,9 +34,9 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
     means_noise, covs_noise, πk2_noise = train_em("models/EM/noise", log.(abs2.(recording_noise)), centers_noise, πk1_noise; nr_iterations=nr_iterations_em, power_dB=ndB)
 
     # perform source separation
-    speech_sep = separate_sources_algonquin("exports/algonquin", id, mixed_signal, means_speech, covs_speech, πk2_speech, means_noise, covs_noise, πk2_noise; observation_noise_precision=observation_noise_precision, block_length=32, power_dB=ndB, save_results=true)
+    speech_sep = separate_sources_algonquin_paper("exports/algonquin_paper", mixed_signal, means_speech, covs_speech, πk2_speech, means_noise, covs_noise, πk2_noise; observation_noise_precision=observation_noise_precision, block_length=32, power_dB=ndB, save_results=true)
 
     # evaluate metrics
-    evaluate_metrics("exports/algonquin/metrics"*id*".txt", speech_sep, mixed_signal, speech_signal)
+    evaluate_metrics("exports/algonquin_paper/metrics"*id*".txt", speech_sep, mixed_signal, speech_signal)
 
 end

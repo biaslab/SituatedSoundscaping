@@ -1,8 +1,8 @@
 using PyPlot, WAV
 
-export separate_sources_algonquin
+export separate_sources_algonquin_paper
 
-function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0, save_results::Bool=true)
+function separate_sources_algonquin_paper(folder, x, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0, save_results::Bool=true)
 
     # calculate number of blocks to process
     nr_blocks = Int(length(x)/block_length)
@@ -25,7 +25,7 @@ function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_spee
         X .= log.(abs2.(squeeze(get_frequency_coefficients(filterbank))))
 
         # calculate weighted gain
-        G[n,:] = loop_inference_algonquin(X, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise, observation_noise_precision, block_length)
+        G[n,:] = loop_inference_algonquin_paper(X, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise, observation_noise_precision, block_length)
 
         # update filter fir_weights
         update_fir_weights!(filterbank, G[n,:])
@@ -41,7 +41,7 @@ function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_spee
         nr_mixtures_speech = size(means_speech,2)
         nr_mixtures_noise = size(means_noise,2)
         folder_extended = "_freq="*string(nr_frequencies)*"_mixs="*string(nr_mixtures_speech)*"_mixn="*string(nr_mixtures_noise)*"_power="*string(power_dB)
-        plot_algonquin(folder, folder_extended, G, output, block_length, fs)
+        plot_algonquin_paper(folder, folder_extended, G, output, block_length, fs)
     end
 
     # return output signal
@@ -50,7 +50,7 @@ function separate_sources_algonquin(folder, x, means_speech, covs_speech, w_spee
 end
 
 # perform inference for all possible combinations
-function loop_inference_algonquin(data, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise, observation_noise_precision, block_length)
+function loop_inference_algonquin_paper(data, means_speech, covs_speech, w_speech, means_noise, covs_noise, w_noise, observation_noise_precision, block_length)
 
     # fetch items 
     nr_mixtures_speech = size(means_speech,2)
@@ -64,7 +64,7 @@ function loop_inference_algonquin(data, means_speech, covs_speech, w_speech, mea
     for (ids, idn) in Iterators.product(1:nr_mixtures_speech, 1:nr_mixtures_noise)
 
         # do inference
-        score[ids, idn], G[ids, idn] = inference_algonquin(data, means_speech[:,ids], covs_speech[:,ids], means_noise[:,idn], covs_noise[:,idn], observation_noise_precision, block_length)
+        score[ids, idn], G[ids, idn] = inference_algonquin_paper(data, means_speech[:,ids], covs_speech[:,ids], means_noise[:,idn], covs_noise[:,idn], observation_noise_precision, block_length)
 
     end
 
@@ -82,7 +82,7 @@ function loop_inference_algonquin(data, means_speech, covs_speech, w_speech, mea
 
 end
 
-function inference_algonquin(data, mean_speech, cov_speech, mean_noise, cov_noise, observation_noise_precision, block_length)
+function inference_algonquin_paper(data, mean_speech, cov_speech, mean_noise, cov_noise, observation_noise_precision, block_length)
     x = mean_speech
     n = mean_noise
     Φ = vcat(cov_speech, cov_noise)
@@ -175,7 +175,7 @@ function score_algonquin(y::Array{Float64,1}, gi::Array{Float64,1}, gi_derivativ
 end
 
 # plot stuff
-function plot_algonquin(folder, folder_extended, G, output, block_length, fs)
+function plot_algonquin_paper(folder, folder_extended, G, output, block_length, fs)
     
     # plot text
     filterbank = warped_filter_bank(block_duration_s=block_length/fs, nr_bands=Int(block_length/2)+1)
