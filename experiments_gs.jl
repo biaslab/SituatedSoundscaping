@@ -37,7 +37,7 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
     q_μ_noise, q_γ_noise, q_a_noise = train_gs("models/GS/noise", recording_noise, means_noise, covs_noise, πk2_noise; nr_iterations=nr_iterations_gs, observation_noise_precision=observation_noise_precision);
 
     # perform source separation
-    speech_sep = separate_sources_gs("exports/gs", mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision, block_length=32, power_dB=ndB, save_results=true)
+    speech_sep = separate_sources_gs("exports/gs", mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision, block_length=32, power_dB=ndB, save_results=true, nr_iterations=nr_iterations_gs)
 
     # evaluate metrics
     evaluate_metrics("exports/gs/metrics"*id*".txt", speech_sep, mixed_signal, speech_signal)

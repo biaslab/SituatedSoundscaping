@@ -1,6 +1,6 @@
 export separate_sources_gs
 
-function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0, save_results::Bool=true)
+function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0, save_results::Bool=true, nr_iterations::Int64=10)
 
     # calculate number of blocks to process
     nr_blocks = Int(length(x)/block_length)
@@ -23,7 +23,7 @@ function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; 
         X = squeeze(get_frequency_coefficients(filterbank))
 
         # calculate weighted gain
-        G[n,:] = loop_inference_gs(X, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision)
+        G[n,:] = loop_inference_gs(X, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision, nr_iterations)
 
         # update filter fir_weights
         update_fir_weights!(filterbank, G[n,:])
@@ -48,7 +48,7 @@ function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; 
 end
 
 # perform inference for all possible combinations
-function loop_inference_gs(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision)
+function loop_inference_gs(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observation_noise_precision, nr_iterations)
 
     # fetch items 
     nr_mixtures_speech = length(qs_μ)
@@ -62,7 +62,7 @@ function loop_inference_gs(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a, observa
     for (ids, idn) in Iterators.product(1:nr_mixtures_speech, 1:nr_mixtures_noise)
 
         # do inference
-        FE[ids, idn], G[ids, idn] = inference_gs(data, qs_μ[ids], qs_γ[ids], qn_μ[idn], qn_γ[idn], observation_noise_precision)
+        FE[ids, idn], G[ids, idn] = inference_gs(data, qs_μ[ids], qs_γ[ids], qn_μ[idn], qn_γ[idn], observation_noise_precision, nr_iterations)
 
     end
 
@@ -82,7 +82,7 @@ end
 
 
 # do inference in model
-function inference_gs(data, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision; nr_iterations=10)
+function inference_gs(data, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision, nr_iterations)
 
     # find number of frequencies
     nr_freqs = length(qs_μ)
