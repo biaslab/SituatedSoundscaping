@@ -70,6 +70,48 @@ function update_qa(data::Data, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Arra
     return  Ddirichlet(q_a_p)
 end
 
+function update_qa(data::Array{Complex{Float64},2}, q_a::Ddirichlet, v_a_down::Ddirichlet, q_μ::Array{Dnormalvector,1}, q_γ::Array{Dgammavector,1}, nr_freqs::Int64, it::Int64, observation_noise_precision::Float64)
+    v_z_down = Dcategorical(exp.(logmean(q_a)) ./ sum(exp.(logmean(q_a))))
+    q_a_p = deepcopy(v_a_down.a)    # clear memory and only keep prior
+    m_tmp = zeros(nr_freqs)
+    freq1 = ones(nr_freqs)
+    U = zeros(length(q_μ))
+    tmp = zeros(nr_freqs)
+
+    # smartly allocate memory for data items
+    d = data
+    dsize = size(data)
+
+    # loop through data files
+    @showprogress "iteration "*string(it)*"a - " for n in 1:1
+
+        # loop through data samples
+        @inbounds for k in 1:dsize[2]
+
+            # upward message from gaussianscale node toward gaussian
+            @inbounds for ki in 1:nr_freqs
+                m_tmp[ki] = log(1/observation_noise_precision + abs2(d[ki,k]))
+            end
+            q_ξ = Dnormalvector(m_tmp, freq1) # approx
+
+            # update U
+            update_z!(q_μ, q_γ, q_ξ, U, tmp)
+            # q_z = v_z_up * v_z_down
+
+            # calculate message towards dirichlet and update new cumulative variable
+            U .*= v_z_down.p
+            normalize_sum!(U)
+            q_a_p .+= U
+
+        end
+
+
+    end
+
+    # return q_a
+    return  Ddirichlet(q_a_p)
+end
+
 function update_μγ(data::Data, v_z_down::Dcategorical, v_μ_down::Array{Dnormalvector}, v_γ_down::Array{Dgammavector}, nr_freqs::Int64, it::Int64)
     q_μ_new = deepcopy(v_μ_down)
     q_μ = deepcopy(v_μ_down)
@@ -115,13 +157,64 @@ function update_μγ(data::Data, v_z_down::Dcategorical, v_μ_down::Array{Dnorma
 
         end
 
+        # close data file
+        close(f)
+        
     end
 
     return q_μ_new, q_γ_new
 
 end
 
-function GaussianScaleVMP(data::Data, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
+
+function update_μγ(data::Array{Complex{Float64},2}, v_z_down::Dcategorical, v_μ_down::Array{Dnormalvector}, v_γ_down::Array{Dgammavector}, nr_freqs::Int64, it::Int64)
+    q_μ_new = deepcopy(v_μ_down)
+    q_μ = deepcopy(v_μ_down)
+    q_γ_new = deepcopy(v_γ_down)
+    q_γ = deepcopy(v_γ_down)
+    U = zeros(length(q_μ_new))
+    tmp = zeros(nr_freqs)
+    freq1 = ones(nr_freqs)
+    nr_mixtures = length(q_μ)
+
+    m_μ_tmp = zeros(nr_freqs)
+    g_μ_tmp = zeros(nr_freqs)
+    a_γ_tmp = zeros(nr_freqs)
+    b_γ_tmp = zeros(nr_freqs)
+
+    # smartly allocate memory for data items
+    d = data
+    dsize = size(data)
+
+    @showprogress "iteration "*string(it)*"b - " for n in 1:1
+
+        # load data
+        for k in 1:dsize[2]
+
+            # upward message from gaussianscale node toward gaussian
+            v_ξ_up = Dnormalvector(log.(1e-10 .+ abs2.(d[:,k])), freq1)
+            q_ξ = v_ξ_up
+
+            # update q_z
+            update_z!(q_μ, q_γ, q_ξ, U, tmp)
+            U .*= v_z_down.p
+            normalize_sum!(U)
+
+            # calculate message towards means and precisions
+            for ki in 1:nr_mixtures
+                q_μ_new[ki] *= Dnormalvector(mean(q_ξ), U[ki]*mean(q_γ[ki]))
+                q_γ_new[ki] *= Dgammavector(1.0 .+ U[ki]*0.5*freq1, U[ki]*0.5*(var(q_μ[ki]) + var(q_ξ) + (mean(q_μ[ki]) - mean(q_ξ)).^2))
+            end
+
+        end
+
+    end
+
+    return q_μ_new, q_γ_new
+
+end
+
+function GaussianScaleVMP(data::Union{Data, Array{Complex{Float64},2}}, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
     (nr_freqs, nr_mixtures) = size(means)
 
     precs = 1 ./ covs
@@ -150,9 +243,7 @@ function GaussianScaleVMP(data::Data, means::Array{Float64,2}, covs::Array{Float
 
 end
 
-
-
-function train_gs(model_name::String, data::Data, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
+function train_gs(model_name::String, data::Union{Data, Array{Complex{Float64},2}}, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
 
     # fetch dimensions 
     (nr_frequencies, nr_mixtures) = size(means)
