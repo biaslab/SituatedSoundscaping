@@ -9,6 +9,7 @@ nr_iterations_em = 10
 nr_iterations_vmp = 10
 observation_noise_precision = 10.0# 4e0
 power_noise = [-10, -5, 0, 5, 10]
+overwrite = false
 
 # perform experiments
 data_speech = prepare_data("data/train_speech_raw", "data/train_speech_processed32"; block_length=32)
@@ -20,6 +21,13 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
     # create identifier
     nr_freqs = 32 ÷ 2 + 1
     id = string("_freq=", nr_freqs, "_mixs=", nmix_speech, "_mixn=", nmix_noise, "_power=", ndB)
+    
+    # skip if already done
+    if !overwrite 
+        if isfile("exports/algonquin/metrics"*id*".txt")
+            continue
+        end
+    end
 
     # prepare data sets
     prepare_data("data/recorded_noise_raw", "data/recorded_noise_processed32/"*string(ndB); block_length=32, power_dB=ndB)
