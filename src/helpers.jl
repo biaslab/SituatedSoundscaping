@@ -127,6 +127,24 @@ function softmax!(x::Array{Float64,2})
 
 end
 
+function softmax_nan!(x::Array{Float64,1})
+
+    replace!(x, NaN=>-Inf)
+    x .-= maximum(x)
+    x .= exp.(x)
+    normalize_sum!(x)
+
+end
+
+function softmax_nan!(x::Array{Float64,2})
+
+    replace!(x, NaN=>-Inf)
+    x .-= maximum(x)
+    x .= exp.(x)
+    normalize_sum!(x)
+
+end
+
 
 """
     logsumexp(x)

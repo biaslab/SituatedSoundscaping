@@ -68,12 +68,16 @@ function loop_inference_algonquin(data, means_speech, covs_speech, w_speech, mea
 
     end
 
-    # determine posterior mixtures
+    # set NaNs in gains to 1 (i.e. no filtering)
+    replace!.(G, NaN=>1.0)
+    replace!(FE, NaN=>1e10)
+
+    # determine posterior mixture probabilities (and remove nans)
     prior = w_speech * w_noise'
     @assert sum(prior) ≈ 1
     posterior = -FE .+ log.(prior)
-    softmax!(posterior)
-    
+    softmax_nan!(posterior)
+
     # weight gain by posteriors
     Gw = sum(G .* posterior)
 
