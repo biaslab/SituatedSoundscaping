@@ -1,3 +1,5 @@
+using PyPlot, WAV, HDF5
+
 export separate_sources_gs
 
 function separate_sources_gs(folder, x, qs_μ, qs_γ, qs_a, qn_μ, qn_γ, qn_a; block_length::Int64=64, fs::Int64=16000, observation_noise_precision::Float64=1e5, power_dB::Real=0, save_results::Bool=true, nr_iterations::Int64=10)
@@ -242,5 +244,9 @@ function plot_gs(folder, folder_extended, G, output, block_length, fs)
     # save signal
     wavwrite(normalize_range(output), folder*"/output_signal"*folder_extended*".wav", Fs=fs)
 
+    # save gain
+    f = h5open(folder*"/gain"*folder_extended*".h5", "w")
+    HDF5.write(f, "gain", G);
+    close(f)
 
 end

@@ -1,4 +1,4 @@
-using PyPlot, WAV
+using PyPlot, WAV, HDF5
 
 export separate_sources_algonquin
 
@@ -229,5 +229,9 @@ function plot_algonquin(folder, folder_extended, G, output, block_length, fs)
     # save signal
     wavwrite(normalize_range(output), folder*"/output_signal"*folder_extended*".wav", Fs=fs)
 
+    # save gain
+    f = h5open(folder*"/gain"*folder_extended*".h5", "w")
+    HDF5.write(f, "gain", G);
+    close(f)
 
 end
