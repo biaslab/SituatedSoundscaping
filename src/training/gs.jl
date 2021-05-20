@@ -247,10 +247,14 @@ function train_gs(model_name::String, data::Union{Data, Array{Complex{Float64},2
 
     # fetch dimensions 
     (nr_frequencies, nr_mixtures) = size(means)
-    nr_files = length(data)
+    if typeof(data) == Data
+        nr_files = length(data)
+    else 
+        nr_files = 1
+    end
 
     # filename
-    filename = model_name*"_"*string(nr_frequencies)*"_"*string(nr_mixtures)*"_"*string(nr_files)*".h5"
+    filename = model_name*"_freq="*string(nr_frequencies)*"_mix="*string(nr_mixtures)*"_file="*string(nr_files)*"_power="*string(power_dB)*".h5"
 
     # check if model exists
     if isfile(filename)
