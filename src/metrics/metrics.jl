@@ -72,4 +72,15 @@ function evaluate_metrics(filename, speech_sep, speech_noisy, speech_true; block
         write(f, "STOI= $stoi \n")
     end
 
+    # save metrics
+    f = h5open(filename[1:end-3]*"h5", "w")
+    HDF5.write(f, "baseline_SNR", SNR_baseline);
+    HDF5.write(f, "baseline_PESQwb", pesqw_baseline);
+    HDF5.write(f, "baseline_PESQnb", pesqn_baseline);
+    HDF5.write(f, "baseline_STOI", stoi_baseline);
+    HDF5.write(f, "new_SNR", SNRo);
+    HDF5.write(f, "new_PESQwb", pesqw);
+    HDF5.write(f, "new_PESQnb", pesqn);
+    HDF5.write(f, "new_STOI", stoi);
+    close(f)
 end
