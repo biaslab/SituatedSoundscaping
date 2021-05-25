@@ -1,0 +1,10 @@
+\BOOKMARK [1][-]{section.1}{Overview}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Approximations}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Message \(x\)}{}% 3
+\BOOKMARK [1][-]{section.3}{Message \(s\)}{}% 4
+\BOOKMARK [2][-]{subsection.3.1}{Solution 1: Full Taylor expansion + LaPlace marginal}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.2}{Solution 2: Partial Taylor expansion + LaPlace message}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.3}{Solution 3: Partial Taylor expansion + LaPlace marginal}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.4}{Alternative solutions}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{Message \(n\)}{}% 9
+\BOOKMARK [1][-]{section.5}{Free energy}{}% 10

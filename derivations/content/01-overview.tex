@@ -1,0 +1,49 @@
+\section{Overview}
+The node factor is given by
+\begin{equation}
+    p(x\mid s,\ n) = \mathcal{N}_\mathcal{C}(x\mid 0, e^s + e^n, 0),
+\end{equation}
+where
+\begin{equation}
+    \mathcal{N}_\mathcal{C}(x \mid \mu, \sigma^2, 0) = \frac{1}{\pi\sigma^2}e^{-\frac{1}{\sigma^2}|x-\mu|^2},
+\end{equation}
+so 
+\begin{equation}
+    p(x\mid s,\ n) = \frac{1}{\pi(e^s + e^n)}e^{-\frac{1}{e^s + e^n}|x|^2}
+\end{equation}
+
+The approximate posterior is given by
+\begin{equation}
+    q(x,\ s,\ n) = q(x) q(s) q(n),
+\end{equation}
+where 
+\begin{align}
+    q(x) &= \mathcal{N}_\mathcal{C}(x\mid m_x, v_x, 0) \\
+    q(s) &= \mathcal{N}(s\mid m_s, v_s) \\
+    q(n) &= \mathcal{N}(n\mid m_n, v_n)   
+\end{align}
+The log-pdf can be found as
+\begin{equation}
+    \ln p(x \mid s, n) = -\ln(e^s + e^n) -\frac{1}{e^s + e^n}|x|^2 + \textit{const}
+\end{equation}
+
+\subsection{Approximations}
+VMP will result in intractable computations because of the non-linear term in the node factor. Therefore we will approximate this non-linear function by a first-order (vector) Taylor expansion. The individual derivatives are given as 
+\begin{equation}
+    \frac{\partial}{\partial s} \ln(e^{s} + e^{n}) = \frac{e^s}{e^s + e^n} = \frac{1}{1+e^{n-s}} = \sigma(s-n),
+\end{equation}
+\begin{equation}
+    \frac{\partial}{\partial n} \ln(e^{s} + e^{n}) = \frac{e^n}{e^s + e^n} = \frac{1}{1+e^{s-n}} = \sigma(n-s),
+\end{equation}
+\begin{equation}
+    \frac{\partial}{\partial s} \frac{1}{e^s + e^n} = \frac{-e^s}{(e^s + e^n)^2} =-e^{-s}\sigma(s-n)^2
+\end{equation}
+and 
+\begin{equation}
+    \frac{\partial}{\partial n} \frac{1}{e^s + e^n} = \frac{-e^n}{(e^s + e^n)^2} =-e^{-n}\sigma(n-s)^2
+\end{equation}
+
+where we specify the sigmoid function $\sigma(x)$ as 
+\begin{equation}
+    \sigma(x)  = \frac{1}{1+ e^{-x}}.
+\end{equation}

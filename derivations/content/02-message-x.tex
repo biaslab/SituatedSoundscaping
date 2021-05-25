@@ -1,0 +1,34 @@
+\section{Message $\nu(x)$}
+
+The message $\nu(x)$ can be calculated as
+\begin{equation}
+    \ln \nu(x) = \mathrm{E}_{q(s)q(n)}\left[\ln p(x\mid s, n)\right]
+\end{equation}
+
+The exponential terms cause issues. Let us focus on the first term $\log(e^s + e^n)$. The expectation with respect to this term cannot be calculated exactly. Instead we need to approximate it (see Zotero). Here we approximate it with the first-order Taylor expansion around its mean as
+\begin{equation}
+    \ln(e^s+e^n) \approx \ln(e^{m_s} + e^{m_n}) + \sigma(m_s - m_n) (s-m_s) + \sigma(m_n - m_s)(n-m_n).
+\end{equation}
+Now the expectation simply becomes 
+\begin{equation}
+    \mathrm{E}_{q(s)q(n)} \left[\ln p(x\mid s,\ n)\right] \approx \ln (e^{m_s} + e^{m_n}).
+\end{equation}
+Similarly the second term in the log-pdf can be approximated as 
+\begin{equation}
+    \mathrm{E}_{q(s)q(n)} \left[ \frac{1}{e^s + e^n}\right] \approx \frac{1}{e^{m_s} + e^{m_n}}.
+\end{equation} 
+
+Using the above approximation we can approximate the log-message as
+\begin{equation}
+    \begin{split}
+        \ln \nu(x) 
+        &= \mathrm{E}_{q(s)q(n)}\left[\ln p(x\mid s,\ n)\right] \\
+        &\approx -\frac{1}{e^{m_s} + e^{m_n}} |x|^2 + \textit{const}
+    \end{split}
+\end{equation}
+and identify it as 
+\begin{equation}
+    \boxed{
+        \nu(x) \propto \mathcal{N}_\mathcal{C}(x \mid 0,\ e^{m_s} + e^{m_n},\ 0)
+    }
+\end{equation}

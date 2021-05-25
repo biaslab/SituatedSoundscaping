@@ -1,0 +1,50 @@
+\section{Message $\nu(s)$}
+For the message $\nu(s)$ we again need to perform some approximations. Below you can find the approximations and their pros and cons. The expecation with respect to $x$ is well-defined and simplifies the problem to 
+\begin{equation}
+    \begin{split}
+        \ln \nu(s) 
+        &= \mathrm{E}_{q(n)q(x)} \left[\ln p(x\mid s,\ n)\right] + \textit{const} \\
+        &= \mathrm{E}_{q(n)} \left[-\ln(e^s + e^n) - \frac{1}{e^s + e^n} (v_X + |m_x|^2)\right] + \textit{const}
+    \end{split}
+\end{equation}
+
+\subsection{Solution 1: Full Taylor expansion + LaPlace marginal}
+If we perform a full Taylor expansion (just like by $\nu(x)$) the message can be found as 
+\begin{equation}
+    \begin{split}
+        \ln \nu(s) 
+        &\approx -s\left(\sigma(m_s-m_n) - e^{-m_s} \sigma(m_s - m_n)^2\right)
+    \end{split}
+\end{equation}
+This message has a linear log-pdf and is improper. An LaPlace approximation for this message is not useful, however, the resulting marginal $q(s)$ can be approximated using LaPlace.
+
+\subsection{Solution 2: Partial Taylor expansion + LaPlace message}
+Alternatively, we can linearize the log-message only with respect to $n$, yielding
+\begin{equation}
+    \ln \nu(s) = -\ln(e^s + e^{m_n}) - \frac{1}{e^s + e^{m_n}} (v_y + |m_x|^2) + \textit{const}
+\end{equation}
+This message has a sigmoidal shape. The log-pdf is shaped horizontally and bends of linearly. This shape is not perse appropriate for approximating it with a Gaussian distribution, but if we want, we could try.
+The parial derivative can be found as 
+\begin{equation}
+    \frac{\partial}{\partial s} \ln \nu(s) = \frac{e^s}{e^s + e^{m_n}} \left(\frac{v_x + |m_x|^2}{e^s + e^{m_n}} - 1\right)
+\end{equation}
+The mean can be found by calculating the corresponding zeros, which is found as 
+\begin{equation}
+    s_0 = \ln(v_x + |m_x|^2 - e^{m_n}),
+\end{equation}
+from which it can be seen that this mode/mean is not always defined.
+
+
+\subsection{Solution 3: Partial Taylor expansion + LaPlace marginal}
+To make sure we can calculate the resulting marginal, the message
+\begin{equation}
+    \ln \nu(s) = -\ln(e^s + e^{m_n}) - \frac{1}{e^s + e^{m_n}} (v_y + |m_x|^2) + \textit{const}
+\end{equation}
+can be propagated along the edge. Using the incoming message, the marginal distribution can be expressed as a function of $s$. Using numerical optimization (as no closed-form expression is present) the mode and variance around the mode can be determined, allowing for a Gaussian LaPlace approximation of the marginal.
+
+\subsection{Alternative solutions}
+Besides the LaPlace approximation, we can solve the problem by moment matching (using for example quadrature integration or importance sampling).
+
+
+\section{Message $\nu(n)$}
+By argument of symmetry, above strategies can be followed for the message $\nu(n)$.
