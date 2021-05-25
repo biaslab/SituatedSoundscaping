@@ -38,7 +38,7 @@ from which it can be seen that this mode/mean is not always defined.
 \subsection{Solution 3: Partial Taylor expansion + LaPlace marginal}
 To make sure we can calculate the resulting marginal, the message
 \begin{equation}
-    \ln \nu(s) = -\ln(e^s + e^{m_n}) - \frac{1}{e^s + e^{m_n}} (v_y + |m_x|^2) + \textit{const}
+    \ln \nu(s) = -\ln(e^s + e^{m_n}) - \frac{1}{e^s + e^{m_n}} (v_x + |m_x|^2) + \textit{const}
 \end{equation}
 can be propagated along the edge. Using the incoming message, the marginal distribution can be expressed as a function of $s$. Using numerical optimization (as no closed-form expression is present) the mode and variance around the mode can be determined, allowing for a Gaussian LaPlace approximation of the marginal.
 
