@@ -243,7 +243,7 @@ function GaussianScaleVMP(data::Union{Data, Array{Complex{Float64},2}}, means::A
 
 end
 
-function train_gs(model_name::String, data::Union{Data, Array{Complex{Float64},2}}, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64)
+function train_gs(model_name::String, data::Union{Data, Array{Complex{Float64},2}}, means::Array{Float64,2}, covs::Array{Float64,2}, πk::Array{Float64,1}; nr_iterations=10::Int64, observation_noise_precision=1e5::Float64, power_dB=0::Real)
 
     # fetch dimensions 
     (nr_frequencies, nr_mixtures) = size(means)

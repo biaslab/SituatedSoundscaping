@@ -7,7 +7,6 @@ nr_mixtures_noise = [1, 2, 3, 4, 5, 10]
 nr_files_speech = 1000
 nr_iterations_em = 10
 nr_iterations_gs = 10
-observation_noise_precision = 1e3
 power_noise = [-10, -5, 0, 5, 10]
 overwrite = false
 
@@ -24,7 +23,7 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
 
     # skip if already done
     if !overwrite 
-        if isfile("exports/gs/metrics"*id*".txt")
+        if isfile("exports/gs_sum/metrics"*id*".txt")
             continue
         end
     end
@@ -37,17 +36,17 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
     # train model speech
     centers_speech, πk1_speech = train_kmeans("models/Kmeans/speech", data_speech, nmix_speech)
     means_speech, covs_speech, πk2_speech = train_em("models/EM/speech", data_speech, centers_speech, πk1_speech; nr_iterations=nr_iterations_em)
-    q_μ_speech, q_γ_speech, q_a_speech = train_gs("models/GS/speech", data_speech, means_speech, covs_speech, πk2_speech; nr_iterations=nr_iterations_gs, observation_noise_precision=observation_noise_precision);
+    q_μ_speech, q_γ_speech, q_a_speech = train_gs("models/GS/speech", data_speech, means_speech, covs_speech, πk2_speech; nr_iterations=nr_iterations_gs);
 
     # train noise model on recording
     centers_noise, πk1_noise = train_kmeans("models/Kmeans/noise", log.(abs2.(recording_noise)), nmix_noise; power_dB=ndB)
     means_noise, covs_noise, πk2_noise = train_em("models/EM/noise", log.(abs2.(recording_noise)), centers_noise, πk1_noise; nr_iterations=nr_iterations_em, power_dB=ndB)
-    q_μ_noise, q_γ_noise, q_a_noise = train_gs("models/GS/noise", recording_noise, means_noise, covs_noise, πk2_noise; nr_iterations=nr_iterations_gs, power_dB=ndB, observation_noise_precision=observation_noise_precision);
+    q_μ_noise, q_γ_noise, q_a_noise = train_gs("models/GS/noise", recording_noise, means_noise, covs_noise, πk2_noise; nr_iterations=nr_iterations_gs, power_dB=ndB);
 
     # perform source separation
-    speech_sep = separate_sources_gs("exports/gs", mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; observation_noise_precision=observation_noise_precision, block_length=32, power_dB=ndB, save_results=true, nr_iterations=nr_iterations_gs)
+    speech_sep = separate_sources_gs_sum("exports/gs_sum", mixed_signal, q_μ_speech, q_γ_speech, q_a_speech, q_μ_noise, q_γ_noise, q_a_noise; block_length=32, power_dB=ndB, save_results=true, nr_iterations=nr_iterations_gs)
 
     # evaluate metrics
-    evaluate_metrics("exports/gs/metrics"*id*".txt", speech_sep, mixed_signal, speech_signal)
+    evaluate_metrics("exports/gs_sum/metrics"*id*".txt", speech_sep, mixed_signal, speech_signal)
 
 end
