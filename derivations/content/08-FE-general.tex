@@ -1,0 +1,12 @@
+\section{Free energy}
+
+The local free energy can be calculated (by a Taylor expansion) as 
+\begin{equation}
+    \begin{split}
+        U
+        &= -\mathrm{E}_{q(y)q(\bm{x})} \left[\ln p(y\mid x_1,\ldots, x_K)\right] \\
+        &= \mathrm{E}_{q(y)q(\bm{x})} \left[\ln(\pi) +\ln\left(\sum_{k=1}^K \exp(x_k)\right) +\frac{1}{\sum_{k=1}^K \exp(x_k)}|y|^2\right] \\
+        &= \mathrm{E}_{q(\bm{x})} \left[\ln(\pi) +\ln\left(\sum_{k=1}^K \exp(x_k)\right) +\frac{1}{\sum_{k=1}^K \exp(x_k)}(v_y + |m_y|^2)\right] \\
+        &\approx \ln(\pi) +\ln\left(\sum_{k=1}^K \exp(m_{x_k})\right) +\frac{1}{\sum_{k=1}^K \exp(m_{x_k})}(v_y + |m_y|^2)
+    \end{split}
+\end{equation}

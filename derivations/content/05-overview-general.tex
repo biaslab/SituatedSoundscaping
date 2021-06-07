@@ -1,0 +1,60 @@
+\section{Overview}
+The node factor is given by
+\begin{equation}
+    p(y\mid x_1,\ldots, x_K) = \mathcal{N}_\mathcal{C}\left(y\ \bigg\vert \ 0, \sum_{k=1}^K \exp (x_k), 0 \right),
+\end{equation}
+where
+\begin{equation}
+    \mathcal{N}_\mathcal{C}(x \mid \mu, \sigma^2, 0) = \frac{1}{\pi\sigma^2}e^{-\frac{1}{\sigma^2}|x-\mu|^2},
+\end{equation}
+so 
+\begin{equation}
+    p(y\mid x_1,\ldots, x_K) = \frac{1}{\pi\sum_{k=1}^K \exp (x_k)}\exp\left\{-\frac{1}{\sum_{k=1}^K \exp (x_k)}|y|^2\right\}
+\end{equation}
+
+The approximate posterior is given by
+\begin{equation}
+    q(y, \bm{x}) = q(y) \prod_{k=1}^K q(x_k),
+\end{equation}
+where 
+\begin{align}
+    q(y) &= \mathcal{N}_\mathcal{C}(y\mid m_y, v_y, 0) \\
+    q(x_k) &= \mathcal{N}(x_k\mid m_{x_k}, v_{x_k}) \\
+\end{align}
+The log-pdf can be found as
+\begin{equation}
+    \ln p(y \mid x_1, \ldots, x_K) = -\ln(\pi) -\ln\left(\sum_{k=1}^K \exp(x_k)\right) -\frac{1}{\sum_{k=1}^K \exp(x_k)}|y|^2
+\end{equation}
+
+\subsection{Approximations}
+VMP will result in intractable computations because of the non-linear term in the node factor. Therefore we will approximate this non-linear function by a first-order (vector) Taylor expansion. The individual derivatives are given as 
+\begin{equation}
+    \frac{\partial}{\partial x_k} \ln \left(\sum_{i=1}^K \exp(x_i) \right) = \frac{\exp(x_k)}{\sum_{i=1}^K \exp(x_i)}
+\end{equation}
+and the corresponding gradient is given as
+\begin{equation}
+    \nabla_x \ln \left(\sum_{i=1}^K \exp(x_i) \right) = \sigma(\bm{x})
+\end{equation}
+where we specify the softmax function $\sigma(\bm{x})$ as 
+\begin{equation}
+    \sigma(\bm{x})_k = \frac{\exp(x_k)}{\sum_{i=1}^K \exp(x_i)}
+\end{equation}
+
+
+The other term can be approximated as
+\begin{equation}
+    \frac{\partial}{\partial x_k} \frac{1}{\sum_{i=1}^K \exp(x_i)} = \frac{-\exp(x_k)}{\left(\sum_{i=1}^K \exp(x_i)\right)^2}
+\end{equation}
+and the corresponding gradient is given as 
+\begin{equation}
+    \nabla_x \frac{1}{\sum_{i=1}^K \exp(x_i)} = -\exp.(\bm{x}) \circ \sigma(\bm{x}) \circ \sigma(\bm{x})
+\end{equation}
+
+Using the above approximations we can approximate the log-likelihood as
+\begin{equation}
+    \begin{split}
+        \ln p(y\mid x_1, \ldots, x_K) 
+        &\approx -\ln(\pi) -\ln\left(\sum_{k=1}^K \exp(m_{x_k})\right) -\frac{1}{\sum_{k=1}^K \exp(m_{x_k})}|y|^2 \\
+        &\qquad - \sigma(\bm{m}_x)^\top (\bm{x} - \bm{m}_x) + (\exp.(\bm{m}_x) \circ \sigma(\bm{m}_x) \circ \sigma(\bm{m}_x))^\top (\bm{x}-\bm{m}_x)|y|^2
+    \end{split}
+\end{equation}

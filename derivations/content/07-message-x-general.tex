@@ -1,0 +1,28 @@
+\section{Message $\nu(x_k)$}
+
+The message $\nu(x_k)$ can be calculated as
+\begin{equation}
+    \begin{split}
+        \ln \nu(x_k) 
+        &= \mathrm{E}_{q(y)q(\bm{x}_{\backslash k})}\left[\ln p(y\mid x_1, \ldots, x_K)\right] + \textit{const} \\
+        &= \mathrm{E}_{q(y)q(\bm{x}_{\backslash k})}\left[-\ln\left(\sum_{i=1}^K \exp(x_i)\right) -\frac{1}{\sum_{i=1}^K \exp(x_i)}|y|^2\right] + \textit{const} \\
+        &= \mathrm{E}_{q(\bm{x}_{\backslash k})}\left[-\ln\left(\sum_{k=1}^K \exp(x_i)\right) -\frac{1}{\sum_{i=1}^K \exp(x_i)}(v_y + |m_y|^2)\right] + \textit{const} \\
+        &= \mathrm{E}_{q(\bm{x}_{\backslash k})}\left[-\ln\left(\exp(x_k) + \sum_{i\neq k} \exp(x_i)\right) -\frac{1}{\exp(x_k) + \sum_{i\neq k} \exp(x_i)}(v_y + |m_y|^2)\right] + \textit{const} \\
+        &\approx \mathrm{E}_{q(\bm{x}_{\backslash k})}\left[-\ln\left(\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})\right) -\frac{1}{\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})}(v_y + |m_y|^2)\right] \\
+        &\qquad - \sigma(\bm{m}_{x_{\backslash k}})^\top (\bm{x}_{\backslash k} - \bm{m}_{x_{\backslash k}}) + (\exp.(\bm{m}_{x_{\backslash k}}) \circ \sigma(\bm{m}_{x_{\backslash k}}) \circ \sigma(\bm{m}_{x_{\backslash k}}))^\top (\bm{x}_{\backslash k}-\bm{m}_{x_{\backslash k}})(v_y + |m_y|^2) + \textit{const} \\
+        &= -\ln\left(\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})\right) -\frac{1}{\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})}(v_y + |m_y|^2)
+    \end{split}
+\end{equation}
+Here the non-linear function is approximated using a first-order Taylor approximation for all $\bm{x}$ except for $x_k$.
+From this description the variational message can be identified as   
+\begin{equation}
+    \boxed{
+        \nu(x_k) \propto \exp\left(-\ln\left(\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})\right) -\frac{1}{\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})}(v_y + |m_y|^2) \right)
+    }
+\end{equation}
+or
+\begin{equation}
+    \boxed{
+        \nu(x_k) \propto \frac{1}{\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})} \exp\left(-\frac{1}{\exp(x_k) + \sum_{i\neq k} \exp(m_{x_i})}(v_y + |m_y|^2) \right)
+    }
+\end{equation}

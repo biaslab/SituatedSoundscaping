@@ -1,0 +1,21 @@
+\section{Message $\nu(y)$}
+
+The message $\nu(y)$ can be calculated as
+\begin{equation}
+    \ln \nu(y) = \mathrm{E}_{q(\bm{x})}\left[\ln p(y\mid x_1, \ldots, x_K)\right]
+\end{equation}
+\begin{equation}
+    \begin{split}
+        \ln \nu(y) 
+        &= \mathrm{E}_{q(\bm{x})}\left[\ln p(y\mid x_1, \ldots, x_K)\right] + \textit{const} \\
+        &\approx \mathrm{E}_{q(\bm{x})}\left[-\frac{1}{\sum_{k=1}^K \exp(m_{x_k})}|y|^2 \right. \\
+        &\qquad \left.+(\exp.(\bm{m}_x) \circ \sigma(\bm{m}_x) \circ \sigma(\bm{m}_x))^\top (\bm{x}-\bm{m}_x)|y|^2\right] + \textit{const} \\
+        &= -\frac{1}{\sum_{k=1}^K \exp(m_{x_k})}|y|^2  +\textit{const}
+    \end{split}
+\end{equation}
+From this description the variational message can be identified as   
+\begin{equation}
+    \boxed{
+        \nu(y) \propto \mathcal{N}_\mathcal{C}\left(y \ \bigg\vert \ 0,\ \sum_{k=1}^K \exp \left( m_{x_k}\right) ,\ 0 \right)
+    }
+\end{equation}

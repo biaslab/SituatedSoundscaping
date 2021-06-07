@@ -2,7 +2,7 @@ using Revise
 using SituatedSoundscaping
 
 # settings
-nr_mixtures_speech = [10, 15, 20, 25, 50, 100]
+nr_mixtures_speech = [10, 15, 20, 25, 50]
 nr_mixtures_noise = [1, 2, 3, 4, 5, 10]
 nr_files_speech = 1000
 nr_iterations_em = 10
