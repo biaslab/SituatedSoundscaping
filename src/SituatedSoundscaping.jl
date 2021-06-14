@@ -26,6 +26,7 @@ module SituatedSoundscaping
     include("training/kmeans.jl")
     include("training/em.jl")
     include("training/gs.jl")
+    include("training/vb.jl")
 
     # include model reduction procedures
     include("adjustment/update_recording.jl")
@@ -37,6 +38,7 @@ module SituatedSoundscaping
     include("separation/source_separation_gs.jl")
     include("separation/source_separation_gs_sum.jl")
     include("separation/source_separation_algonquin.jl")
+    include("separation/source_separation_algonquin_vb.jl")
     include("separation/source_separation_algonquin_paper.jl")
     include("separation/wiener.jl")
 
