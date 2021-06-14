@@ -50,29 +50,3 @@ for (ndB, nmix_speech, nmix_noise) in Iterators.product(power_noise, nr_mixtures
     evaluate_metrics("exports/gs_sum/metrics"*id*".txt", speech_sep, mixed_signal, speech_signal)
 
 end
-
-
-
-using PyPlot
-ndB = -10
-nmix_noise = 1
-centers_noise, πk1_noise = train_kmeans("models/Kmeans/noise", log.(abs2.(recording_noise)), nmix_noise; power_dB=ndB)
-means_noise, covs_noise, πk2_noise = train_em("models/EM/noise", log.(abs2.(recording_noise)), centers_noise, πk1_noise; nr_iterations=nr_iterations_em, power_dB=ndB)
-q_μ_noise, q_γ_noise, q_a_noise = train_gs("models/GS/noise", recording_noise, means_noise, covs_noise, πk2_noise; nr_iterations=nr_iterations_gs, power_dB=ndB);
-
-plt.figure()
-plt.plot(squeeze(centers_noise))
-plt.grid()
-plt.gcf()
-
-plt.figure()
-plt.plot(squeeze(means_noise))
-plt.fill_between(0:16, squeeze(means_noise) .- sqrt.(squeeze(covs_noise)), squeeze(means_noise) .+ sqrt.(squeeze(covs_noise)), alpha= 0.2)
-plt.grid()
-plt.gcf()
-
-plt.figure()
-plt.plot(squeeze(mean.(q_μ_noise)))
-plt.fill_between(0:16, squeeze(mean(q_μ_noise[1])) .- sqrt.(1 ./ squeeze(mean(q_γ_noise[1]))), squeeze(mean(q_μ_noise[1])) .+ sqrt.(1 ./ squeeze(mean(q_γ_noise[1]))), alpha= 0.2)
-plt.grid()
-plt.gcf()
