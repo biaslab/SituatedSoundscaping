@@ -28,7 +28,7 @@ begin
 
     # fetch metrics gs_sum
     metrics_gs_sum = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    for metrics_file in filter(x -> occursin(".h5", a), readdir("paper/experiment1_clapping_SNR/exports/gs_sum",join=true))
+    for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment1_clapping_SNR/exports/gs_sum",join=true))
         SNR = -parse(Int64, split(metrics_file[findfirst("power=", metrics_file)[end]+1:end], ".")[1])
         metrics_gs_sum["SNR"]["y"][SNR÷5+3] = h5read(metrics_file, "new_SNR")
         metrics_gs_sum["SNR"]["x"][SNR÷5+3] = SNR
@@ -42,7 +42,7 @@ begin
 
     # fetch metrics wiener
     metrics_wiener = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    for metrics_file in filter(x -> occursin(".h5", a), readdir("paper/experiment1_clapping_SNR/exports/wiener",join=true))
+    for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment1_clapping_SNR/exports/wiener",join=true))
         SNR = -parse(Int64, split(metrics_file[findfirst("power=", metrics_file)[end]+1:end], ".")[1])
         metrics_wiener["SNR"]["y"][SNR÷5+3] = h5read(metrics_file, "new_SNR")
         metrics_wiener["SNR"]["x"][SNR÷5+3] = SNR
@@ -102,10 +102,10 @@ plt_metrics = @pgf GroupPlot(
         grid = "major",
     },
     # plots for axis 2
-    Plot(Table(metrics_baseline["PESQwb"]["x"], metrics_baseline["PESQwb"]["y"])), LegendEntry("Baseline"),
-    Plot(Table(metrics_algonquin["PESQwb"]["x"], metrics_algonquin["PESQwb"]["y"])), LegendEntry("Algonquin"),
-    Plot(Table(metrics_gs_sum["PESQwb"]["x"], metrics_gs_sum["PESQwb"]["y"])), LegendEntry("GS sum"),
-    Plot(Table(metrics_wiener["PESQwb"]["x"], metrics_wiener["PESQwb"]["y"])), LegendEntry("Wiener"),
+    Plot(Table(metrics_baseline["PESQ_wb"]["x"], metrics_baseline["PESQ_wb"]["y"])), LegendEntry("Baseline"),
+    Plot(Table(metrics_algonquin["PESQ_wb"]["x"], metrics_algonquin["PESQ_wb"]["y"])), LegendEntry("Algonquin"),
+    Plot(Table(metrics_gs_sum["PESQ_wb"]["x"], metrics_gs_sum["PESQ_wb"]["y"])), LegendEntry("GS sum"),
+    Plot(Table(metrics_wiener["PESQ_wb"]["x"], metrics_wiener["PESQ_wb"]["y"])), LegendEntry("Wiener"),
 
     # axis 3 (STOI)
     { 
