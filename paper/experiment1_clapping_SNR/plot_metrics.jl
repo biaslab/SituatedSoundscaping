@@ -55,32 +55,14 @@ begin
     end
 end
 
-metrics_algonquin
-metrics_baseline
-metrics_gs_sum
-metrics_wiener
-
-# plt_metrics = @pgf Axis({   xlabel="input SNR",
-#                             ylabel="Free energy [nats]",
-#                             legend_pos = "north east",
-#                             legend_cell_align="{left}",
-#                             scale = 1.0,
-#                             grid = "major",
-#                             title = "FE $(nmixtures) mixtures",
-#                             },
-#                             Plot({no_marks, color="red"}, Coordinates(collect(2:niterations), em_fe[2:end])), LegendEntry("EM"),
-#                             Plot({no_marks, style ="{dashed}", color="blue"}, Coordinates(collect(2:niterations), vi_fe[2:end])), LegendEntry("VI"))
-
-# pgfsave("results/countries/plt_fe.tikz", plt_fe)
-
 
 plt_metrics = @pgf GroupPlot(
     # group plot options
     {
         group_style = {
-            group_size="3 by 1",
+            group_size = "3 by 1",
+            horizontal_sep = "1.5cm",
         },
-        no_markers,
     },
 
     # axis 1 (SNR)
@@ -88,6 +70,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="input SNR",
         ylabel="output SNR",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 1
     Plot(Table(metrics_baseline["SNR"]["x"], metrics_baseline["SNR"]["y"])), LegendEntry("Baseline"),
@@ -100,6 +83,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="input SNR",
         ylabel="output PESQ",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 2
     Plot(Table(metrics_baseline["PESQ_wb"]["x"], metrics_baseline["PESQ_wb"]["y"])), LegendEntry("Baseline"),
@@ -112,6 +96,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="input SNR",
         ylabel="output STOI",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 3
     Plot(Table(metrics_baseline["STOI"]["x"], metrics_baseline["STOI"]["y"])), LegendEntry("Baseline"),
@@ -122,5 +107,3 @@ plt_metrics = @pgf GroupPlot(
 )
 
 pgfsave("paper/experiment1_clapping_SNR/exports/figures/metrics.tikz", plt_metrics)
-
-metrics_algonquin

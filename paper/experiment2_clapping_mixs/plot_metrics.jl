@@ -6,7 +6,7 @@ using PGFPlotsX
 begin
     metrics_algonquin = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
     metrics_baseline = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    mixs_all = map(parse(Int64, split(metrics_file[findfirst("mixs=", metrics_file)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/algonquin_vb",join=true)))
+    mixs_all = sort(map(x -> parse(Int64, split(x[findfirst("mixs=", x)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/algonquin_vb",join=true))))
     for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/algonquin_vb",join=true))
         mixs = parse(Int64, split(metrics_file[findfirst("mixs=", metrics_file)[end]+1:end], "_")[1])
         mixs_ind = findall(x -> x==mixs, mixs_all)[1]
@@ -30,7 +30,7 @@ begin
 
     # fetch metrics gs_sum
     metrics_gs_sum = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    mixs_all = map(parse(Int64, split(metrics_file[findfirst("mixs=", metrics_file)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/gs_sum",join=true)))
+    mixs_all = sort(map(x -> parse(Int64, split(x[findfirst("mixs=", x)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/gs_sum",join=true))))
     for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/gs_sum",join=true))
         mixs = parse(Int64, split(metrics_file[findfirst("mixs=", metrics_file)[end]+1:end], "_")[1])
         mixs_ind = findall(x -> x==mixs, mixs_all)[1]
@@ -46,7 +46,8 @@ begin
 
     # fetch metrics wiener
     metrics_wiener = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    for (mixs_ind, metrics_file) in enumerate(filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixs/exports/wiener",join=true))) 
+    metrics_file = "paper/experiment2_clapping_mixs/exports/wiener/metrics_power=0.h5"
+    for mixs_ind = 1:length(mixs_all)
         metrics_wiener["SNR"]["y"][mixs_ind] = h5read(metrics_file, "new_SNR")
         metrics_wiener["SNR"]["x"][mixs_ind] = mixs_all[mixs_ind]
         metrics_wiener["PESQ_nb"]["y"][mixs_ind] = h5read(metrics_file, "new_PESQnb")
@@ -58,32 +59,14 @@ begin
     end
 end
 
-metrics_algonquin
-metrics_baseline
-metrics_gs_sum
-metrics_wiener
-
-# plt_metrics = @pgf Axis({   xlabel="input SNR",
-#                             ylabel="Free energy [nats]",
-#                             legend_pos = "north east",
-#                             legend_cell_align="{left}",
-#                             scale = 1.0,
-#                             grid = "major",
-#                             title = "FE $(nmixtures) mixtures",
-#                             },
-#                             Plot({no_marks, color="red"}, Coordinates(collect(2:niterations), em_fe[2:end])), LegendEntry("EM"),
-#                             Plot({no_marks, style ="{dashed}", color="blue"}, Coordinates(collect(2:niterations), vi_fe[2:end])), LegendEntry("VI"))
-
-# pgfsave("results/countries/plt_fe.tikz", plt_fe)
-
 
 plt_metrics = @pgf GroupPlot(
     # group plot options
     {
         group_style = {
             group_size="3 by 1",
+            horizontal_sep = "1.5cm",
         },
-        no_markers,
     },
 
     # axis 1 (SNR)
@@ -91,6 +74,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="number of mixtures (speech)",
         ylabel="output SNR",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 1
     Plot(Table(metrics_baseline["SNR"]["x"], metrics_baseline["SNR"]["y"])), LegendEntry("Baseline"),
@@ -103,18 +87,20 @@ plt_metrics = @pgf GroupPlot(
         xlabel="number of mixtures (speech)",
         ylabel="output PESQ",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 2
-    Plot(Table(metrics_baseline["PESQwb"]["x"], metrics_baseline["PESQwb"]["y"])), LegendEntry("Baseline"),
-    Plot(Table(metrics_algonquin["PESQwb"]["x"], metrics_algonquin["PESQwb"]["y"])), LegendEntry("Algonquin"),
-    Plot(Table(metrics_gs_sum["PESQwb"]["x"], metrics_gs_sum["PESQwb"]["y"])), LegendEntry("GS sum"),
-    Plot(Table(metrics_wiener["PESQwb"]["x"], metrics_wiener["PESQwb"]["y"])), LegendEntry("Wiener"),
+    Plot(Table(metrics_baseline["PESQ_wb"]["x"], metrics_baseline["PESQ_wb"]["y"])), LegendEntry("Baseline"),
+    Plot(Table(metrics_algonquin["PESQ_wb"]["x"], metrics_algonquin["PESQ_wb"]["y"])), LegendEntry("Algonquin"),
+    Plot(Table(metrics_gs_sum["PESQ_wb"]["x"], metrics_gs_sum["PESQ_wb"]["y"])), LegendEntry("GS sum"),
+    Plot(Table(metrics_wiener["PESQ_wb"]["x"], metrics_wiener["PESQ_wb"]["y"])), LegendEntry("Wiener"),
 
     # axis 3 (STOI)
     { 
         xlabel="number of mixtures (speech)",
         ylabel="output STOI",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 3
     Plot(Table(metrics_baseline["STOI"]["x"], metrics_baseline["STOI"]["y"])), LegendEntry("Baseline"),

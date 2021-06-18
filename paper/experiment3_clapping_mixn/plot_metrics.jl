@@ -46,35 +46,18 @@ begin
 
     # fetch metrics wiener
     metrics_wiener = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    for (mixn_ind, metrics_file) in enumerate(filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment3_clapping_mixn/exports/wiener",join=true))) 
+    metrics_file = "paper/experiment3_clapping_mixs/exports/wiener/metrics_power=0.h5"
+    for mixn_ind = 1:length(mixn_all)
         metrics_wiener["SNR"]["y"][mixn_ind] = h5read(metrics_file, "new_SNR")
-        metrics_wiener["SNR"]["x"][mixn_ind] = mixn_all[mixn_ind]
+        metrics_wiener["SNR"]["x"][mixn_ind] = mixs_all[mixn_ind]
         metrics_wiener["PESQ_nb"]["y"][mixn_ind] = h5read(metrics_file, "new_PESQnb")
-        metrics_wiener["PESQ_nb"]["x"][mixn_ind] = mixn_all[mixn_ind]
+        metrics_wiener["PESQ_nb"]["x"][mixn_ind] = mixs_all[mixn_ind]
         metrics_wiener["PESQ_wb"]["y"][mixn_ind] = h5read(metrics_file, "new_PESQwb")
-        metrics_wiener["PESQ_wb"]["x"][mixn_ind] = mixn_all[mixn_ind]
+        metrics_wiener["PESQ_wb"]["x"][mixn_ind] = mixs_all[mixn_ind]
         metrics_wiener["STOI"]["y"][mixn_ind] = h5read(metrics_file, "new_STOI")
-        metrics_wiener["STOI"]["x"][mixn_ind] = mixn_all[mixn_ind]
+        metrics_wiener["STOI"]["x"][mixn_ind] = mixs_all[mixn_ind]
     end
 end
-
-metrics_algonquin
-metrics_baseline
-metrics_gs_sum
-metrics_wiener
-
-# plt_metrics = @pgf Axis({   xlabel="input SNR",
-#                             ylabel="Free energy [nats]",
-#                             legend_pos = "north east",
-#                             legend_cell_align="{left}",
-#                             scale = 1.0,
-#                             grid = "major",
-#                             title = "FE $(nmixtures) mixtures",
-#                             },
-#                             Plot({no_marks, color="red"}, Coordinates(collect(2:niterations), em_fe[2:end])), LegendEntry("EM"),
-#                             Plot({no_marks, style ="{dashed}", color="blue"}, Coordinates(collect(2:niterations), vi_fe[2:end])), LegendEntry("VI"))
-
-# pgfsave("results/countries/plt_fe.tikz", plt_fe)
 
 
 plt_metrics = @pgf GroupPlot(
@@ -82,8 +65,8 @@ plt_metrics = @pgf GroupPlot(
     {
         group_style = {
             group_size="3 by 1",
+            horizontal_sep = "1.5cm",
         },
-        no_markers,
     },
 
     # axis 1 (SNR)
@@ -91,6 +74,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="number of mixtures (noise)",
         ylabel="output SNR",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 1
     Plot(Table(metrics_baseline["SNR"]["x"], metrics_baseline["SNR"]["y"])), LegendEntry("Baseline"),
@@ -103,6 +87,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="number of mixtures (noise)",
         ylabel="output PESQ",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 2
     Plot(Table(metrics_baseline["PESQwb"]["x"], metrics_baseline["PESQwb"]["y"])), LegendEntry("Baseline"),
@@ -115,6 +100,7 @@ plt_metrics = @pgf GroupPlot(
         xlabel="number of mixtures (noise)",
         ylabel="output STOI",
         grid = "major",
+        style = {thick},
     },
     # plots for axis 3
     Plot(Table(metrics_baseline["STOI"]["x"], metrics_baseline["STOI"]["y"])), LegendEntry("Baseline"),
