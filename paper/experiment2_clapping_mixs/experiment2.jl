@@ -4,7 +4,7 @@ using SituatedSoundscaping
 # experiments algonquin_vb
 begin 
     # settings
-    nr_mixtures_speech = [5, 10, 25, 50, 100]
+    nr_mixtures_speech = [5, 10, 15, 25, 50]
     nr_mixtures_noise = [1]
     nr_files_speech = 1000
     nr_iterations_em = 10
@@ -62,7 +62,7 @@ end
 begin
         
     # settings
-    nr_mixtures_speech = [5, 10, 25, 50, 100]
+    nr_mixtures_speech = [5, 10, 15, 25, 50]
     nr_mixtures_noise = [1]
     nr_files_speech = 1000
     nr_iterations_em = 10
@@ -118,7 +118,7 @@ end
 begin
     
     # settings
-    power_noise = [-10, -5, 0, 5, 10]
+    power_noise = [0]
 
     # perform experiments
     for ndB in power_noise

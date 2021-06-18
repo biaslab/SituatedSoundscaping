@@ -118,7 +118,7 @@ end
 begin
     
     # settings
-    power_noise = [-10, -5, 0, 5, 10]
+    power_noise = [0]
 
     # perform experiments
     for ndB in power_noise
