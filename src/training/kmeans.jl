@@ -2,7 +2,7 @@ using ParallelKMeans
 
 export train_kmeans
 
-function train_kmeans(model_name::String, data::Data, nr_mixtures::Int64; power_dB=0::Real)
+function train_kmeans(model_name::String, data::Data, nr_mixtures::Int64; power_dB=0::Real, nr_tries=10::Int64)
 
     # fetch dimensions 
     nr_frequencies = size(getindex(data, 1, "data_logpower"),1)
@@ -25,8 +25,15 @@ function train_kmeans(model_name::String, data::Data, nr_mixtures::Int64; power_
     else
 
         # train model
-        km = ParallelKMeans.kmeans(collect(data, "data_logpower"), nr_mixtures)
-        
+        km = 0
+        km_J = Inf
+        for it = 1:nr_tries
+            km_tmp = ParallelKMeans.kmeans(collect(data, "data_logpower"), nr_mixtures)
+            if km_tmp.totalcost < km_J
+                km = deepcopy(km_tmp)
+                km_J = deepcopy(km_tmp.totalcost)
+            end
+        end
         # extract parameters
         centers = km.centers;
         πk = normalize_sum([count(x->x==k, km.assignments) for k in 1:nr_mixtures]);
