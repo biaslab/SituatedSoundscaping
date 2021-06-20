@@ -2,10 +2,10 @@ using SituatedSoundscaping
 
 
 # experiments algonquin_vb
-begin 
+begin
     # settings
     nr_mixtures_speech = [25]
-    nr_mixtures_noise = [1,2,3,4,5,10]
+    nr_mixtures_noise = [1,2,3,4,5,10,15]
     nr_files_speech = 1000
     nr_iterations_em = 10
     nr_iterations_vb = 10
@@ -63,7 +63,7 @@ begin
         
     # settings
     nr_mixtures_speech = [25]
-    nr_mixtures_noise = [1, 2, 3, 4, 5]
+    nr_mixtures_noise = [1,2,3,4,5,10,15]
     nr_files_speech = 1000
     nr_iterations_em = 10
     nr_iterations_gs = 10
