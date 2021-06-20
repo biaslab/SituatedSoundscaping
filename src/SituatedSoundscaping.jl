@@ -37,8 +37,10 @@ module SituatedSoundscaping
     include("separation/source_separation.jl")
     include("separation/source_separation_gs.jl")
     include("separation/source_separation_gs_sum.jl")
+    include("separation/source_separation_gs_sum_simplified.jl")
     include("separation/source_separation_algonquin.jl")
     include("separation/source_separation_algonquin_vb.jl")
+    include("separation/source_separation_algonquin_vb_simplified.jl")
     include("separation/source_separation_algonquin_paper.jl")
     include("separation/wiener.jl")
 
