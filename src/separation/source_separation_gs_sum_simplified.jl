@@ -73,7 +73,7 @@ function loop_inference_gs_sum_simplified(data, qs_μ, qs_γ, qs_a, qn_μ, qn_γ
     @assert sum(prior) ≈ 1
     posterior = -FE .+ log.(prior)
     softmax!(posterior)
-    
+
     # weight gain by posteriors
     Gw = sum(G .* posterior)
 
@@ -90,7 +90,7 @@ function inference_gs_sum_simplified(data, qs_μ, qs_γ, qn_μ, qn_γ, observati
     nr_freqs = length(qs_μ)
 
     # create model
-    model, (ξs_μ, ξs_γ, ξs, ξn_μ, ξn_γ, ξn, Y) = source_separation_model_gs_sum_simplified(nr_freqs, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision)
+    model, (ξs, ξn, Y) = source_separation_model_gs_sum_simplified(nr_freqs, qs_μ, qs_γ, qn_μ, qn_γ, observation_noise_precision)
 
     # allocate space for marginals
     marg_ξs = keep(Vector{Marginal})

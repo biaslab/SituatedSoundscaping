@@ -4,10 +4,10 @@ using PGFPlotsX
 
 # fetch results
 begin
-    metrics_algonquin = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    metrics_baseline = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    mixn_all = map(x -> parse(Int64, split(x[findfirst("mixn=", x)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment3_clapping_mixn/exports/algonquin_vb",join=true)))
-    for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment3_clapping_mixn/exports/algonquin_vb",join=true))
+    metrics_algonquin = Dict("SNR"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_nb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_wb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "STOI"=> Dict("x"=> zeros(6), "y"=> zeros(6)))
+    metrics_baseline = Dict("SNR"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_nb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_wb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "STOI"=> Dict("x"=> zeros(6), "y"=> zeros(6)))
+    mixn_all = sort(map(x -> parse(Int64, split(x[findfirst("mixn=", x)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixn_simplified/exports/algonquin_vb",join=true))))
+    for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixn_simplified/exports/algonquin_vb",join=true))
         mixn = parse(Int64, split(metrics_file[findfirst("mixn=", metrics_file)[end]+1:end], "_")[1])
         mixn_ind = findall(x -> x==mixn, mixn_all)[1]
         metrics_algonquin["SNR"]["y"][mixn_ind] = h5read(metrics_file, "new_SNR")
@@ -29,9 +29,9 @@ begin
     end
 
     # fetch metrics gs_sum
-    metrics_gs_sum = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    mixn_all = map(x -> parse(Int64, split(x[findfirst("mixn=", x)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment3_clapping_mixn/exports/algonquin_vb",join=true)))
-    for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment3_clapping_mixn/exports/gs_sum",join=true))
+    metrics_gs_sum = Dict("SNR"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_nb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_wb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "STOI"=> Dict("x"=> zeros(6), "y"=> zeros(6)))
+    mixn_all = sort(map(x -> parse(Int64, split(x[findfirst("mixn=", x)[end]+1:end], "_")[1]), filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixn_simplified/exports/algonquin_vb",join=true))))
+    for metrics_file in filter(x -> occursin(".h5", x) & occursin("metrics",x), readdir("paper/experiment2_clapping_mixn_simplified/exports/gs_sum",join=true))
         mixn = parse(Int64, split(metrics_file[findfirst("mixn=", metrics_file)[end]+1:end], "_")[1])
         mixn_ind = findall(x -> x==mixn, mixn_all)[1]
         metrics_gs_sum["SNR"]["y"][mixn_ind] = h5read(metrics_file, "new_SNR")
@@ -45,8 +45,8 @@ begin
     end
 
     # fetch metrics wiener
-    metrics_wiener = Dict("SNR"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_nb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "PESQ_wb"=> Dict("x"=> zeros(5), "y"=> zeros(5)), "STOI"=> Dict("x"=> zeros(5), "y"=> zeros(5)))
-    metrics_file = "paper/experiment3_clapping_mixn/exports/wiener/metrics_power=0.h5"
+    metrics_wiener = Dict("SNR"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_nb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "PESQ_wb"=> Dict("x"=> zeros(6), "y"=> zeros(6)), "STOI"=> Dict("x"=> zeros(6), "y"=> zeros(6)))
+    metrics_file = "paper/experiment2_clapping_mixn_simplified/exports/wiener/metrics_power=0.h5"
     for mixn_ind = 1:length(mixn_all)
         metrics_wiener["SNR"]["y"][mixn_ind] = h5read(metrics_file, "new_SNR")
         metrics_wiener["SNR"]["x"][mixn_ind] = mixn_all[mixn_ind]
@@ -110,4 +110,4 @@ plt_metrics = @pgf GroupPlot(
 
 )
 
-pgfsave("paper/experiment3_clapping_mixn_simplified/exports/figures/metrics.tikz", plt_metrics)
+pgfsave("paper/experiment2_clapping_mixn_simplified/exports/figures/metrics.tikz", plt_metrics)

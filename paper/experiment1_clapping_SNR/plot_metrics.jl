@@ -71,6 +71,7 @@ plt_metrics = @pgf GroupPlot(
         ylabel="output SNR",
         grid = "major",
         style = {thick},
+        legend_pos = "south east",
     },
     # plots for axis 1
     Plot(Table(metrics_baseline["SNR"]["x"], metrics_baseline["SNR"]["y"])), LegendEntry("Baseline"),
@@ -84,6 +85,7 @@ plt_metrics = @pgf GroupPlot(
         ylabel="output PESQ",
         grid = "major",
         style = {thick},
+        legend_pos = "north"
     },
     # plots for axis 2
     Plot(Table(metrics_baseline["PESQ_wb"]["x"], metrics_baseline["PESQ_wb"]["y"])), LegendEntry("Baseline"),
@@ -97,6 +99,7 @@ plt_metrics = @pgf GroupPlot(
         ylabel="output STOI",
         grid = "major",
         style = {thick},
+        legend_pos = "south east",
     },
     # plots for axis 3
     Plot(Table(metrics_baseline["STOI"]["x"], metrics_baseline["STOI"]["y"])), LegendEntry("Baseline"),
