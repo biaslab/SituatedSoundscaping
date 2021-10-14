@@ -1,6 +1,10 @@
-# Situated Soundscaping
-This repository will contain the most up-to-date progress of the Situated Soundscaping project.
+# A Bayesian Modeling Approach to Situated Design of Personalized Soundscaping Algorithms
+*By Bart van Erp, Albert Podusenko, Tanya Ignatenko and Bert de Vries*
+### Published in the special issue on AI, Machine Learning and Deep Learning in Signal Processing of the Applied Sciences journal (2021).
+---
+**Abstract**
 
-The Situated Soundscaping project is focussed towards enabling hearing aid users to be in control of their hearing aid algorithm. The user should be able to record a short fragment of the sound that he or she perceives and decide whether this sound needs to be amplified or surpressed. 
+Effective noise reduction and speech enhancement algorithms have great potential to enhance lives of hearing aid users by restoring speech intelligibility. An open problem in today’s commercial hearing aids is how to take into account users’ preferences, indicating which acoustic sources should be suppressed or enhanced, since they are not only user-specific but also depend on many situational factors. In this paper, we develop a fully probabilistic approach to “situated soundscaping”, which aims at enabling users to make on-the-spot (“situated”) decisions about the enhancement or suppression of individual acoustic sources. The approach rests on a compact generative probabilistic model for acoustic signals. In this framework, all signal processing tasks (source modeling, source separation and soundscaping) are framed as automatable probabilistic inference tasks. These tasks can be efficiently executed using message passing-based inference on factor graphs. Since all signal processing tasks are automatable, the approach supports fast future model design cycles in an effort to reach commercializable performance levels. The presented results show promising performance in terms of SNR, PESQ and STOI improvements in a situated setting.
 
-The speech data set used for this project has been retrieved from https://www.openslr.org/12 and represents 100 hours of cleaned speech recordings. The noise data set has been obtained from http://www.eduardofonseca.net/FSDnoisy18k/#download.
+---
+This repository contains the experiments and derivations of the paper, available at [https://www.mdpi.com/2076-3417/11/20/9535](https://www.mdpi.com/2076-3417/11/20/9535).
