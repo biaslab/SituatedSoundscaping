@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "Please cite this research as below."
+authors:
+- family-names: "van Erp"
+  given-names: "Bart"
+  orcid: "https://orcid.org/0000-0002-5619-7071"
+title: "SituatedSoundscaping"
+version: 1.0.0
+date-released: 2021-11-14
+url: "https://github.com/biaslab/SituatedSoundscaping"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "van Erp"
+    given-names: "Bart"
+    orcid: "https://orcid.org/0000-0002-5619-7071"
+  - family-names: "Podusenko"
+    given-names: "Albert"
+    orcid: "https://orcid.org/0000-0003-0515-0465"
+  - family-names: "Ignatenko"
+    given-names: "Tanya"
+  - family-names: "de Vries"
+    given-names: "Bart"
+  doi: "10.3390/app11209535"
+  journal: "Applied Sciences"
+  title: "A Bayesian Modeling Approach to Situated Design of Personalized Soundscaping Algorithms"
+  year: 2021
+  month: 10
+  volume: 11
+  issue: 20
